@@ -86,10 +86,7 @@ fun GamePlayScreen(
     }
     DisposableEffect(Unit) {
         hideBars()
-        onDispose {
-            val w = findAct(ctx)?.window
-            if (w != null) androidx.core.view.WindowInsetsControllerCompat(w, view).show(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-        }
+        onDispose { }
     }
     LaunchedEffect(gameState.status) { hideBars() }
     // Android Back button handler

@@ -80,7 +80,7 @@ fun RescueScreen(
     LaunchedEffect(Unit) { while (true) { androidx.compose.runtime.withFrameMillis { frame = it } } }
 
     Column(
-        Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF1E5B4F), Color(0xFF0E2A2A)))).statusBarsPadding().padding(8.dp),
+        Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF1E5B4F), Color(0xFF0E2A2A)))).statusBarsPadding().navigationBarsPadding().padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -100,6 +100,7 @@ fun RescueScreen(
             val boardW = cellDp * l.cols
             val boardH = cellDp * l.rows
             var cellPx by remember { mutableFloatStateOf(1f) }
+            androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
             Box(
                 Modifier.size(boardW, boardH)
                     .onSizeChanged { cellPx = it.width / l.cols.toFloat() }
@@ -169,6 +170,7 @@ fun RescueScreen(
                         }.then(Modifier.offset { IntOffset.Zero })
                     )
                 }
+            }
             }
         }
 

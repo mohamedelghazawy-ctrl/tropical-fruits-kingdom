@@ -32,9 +32,26 @@ import com.example.viewmodel.TropicalGameViewModel
 class MainActivity : ComponentActivity() {
     private val viewModel: TropicalGameViewModel by viewModels()
 
+    /** ملء الشاشة في كل اللعبة: تختفي أزرار النظام وشريط الحالة وتظهر مؤقتًا عند السحب من الحافة. */
+    private fun hideSystemBars() {
+        if (android.os.Build.VERSION.SDK_INT >= 28) {
+            window.attributes = window.attributes.also { it.layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES }
+        }
+        androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).let {
+            it.systemBarsBehavior = androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            it.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemBars()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        hideSystemBars()
         setContent {
             TropicalCrushTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
