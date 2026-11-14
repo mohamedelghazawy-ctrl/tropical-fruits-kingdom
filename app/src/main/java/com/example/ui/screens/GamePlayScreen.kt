@@ -76,7 +76,7 @@ fun GamePlayScreen(
     val view = androidx.compose.ui.platform.LocalView.current
     val ctx = androidx.compose.ui.platform.LocalContext.current
     fun hideBars() {
-        val w = (ctx as? android.app.Activity)?.window ?: return
+        val w = findAct(ctx)?.window ?: return
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(w, false)
         if (android.os.Build.VERSION.SDK_INT >= 28) w.attributes = w.attributes.also { it.layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES }
         androidx.core.view.WindowInsetsControllerCompat(w, view).let {
@@ -87,7 +87,7 @@ fun GamePlayScreen(
     DisposableEffect(Unit) {
         hideBars()
         onDispose {
-            val w = (ctx as? android.app.Activity)?.window
+            val w = findAct(ctx)?.window
             if (w != null) androidx.core.view.WindowInsetsControllerCompat(w, view).show(androidx.core.view.WindowInsetsCompat.Type.systemBars())
         }
     }
@@ -287,7 +287,7 @@ fun GamePlayScreen(
                     onResume = onResumeClick,
                     onRestart = onRestartClick,
                     onMainMenu = onMainMenuClick,
-                    onExit = { (ctx as? android.app.Activity)?.finishAffinity() }
+                    onExit = { findAct(ctx)?.finishAffinity() }
                 )
             }
             GameStatus.PLAYING -> {
@@ -295,4 +295,10 @@ fun GamePlayScreen(
             }
         }
     }
+}
+
+private fun findAct(c: android.content.Context): android.app.Activity? {
+    var x: android.content.Context? = c
+    while (x is android.content.ContextWrapper) { if (x is android.app.Activity) return x; x = x.baseContext }
+    return null
 }

@@ -94,6 +94,8 @@ fun GameBoard(
 
             val currentOnSwipe by rememberUpdatedState(onSwipe)
 
+            // اللوحة دائمًا يسار→يمين كي تتطابق إحداثيات اللمس مع أماكن الفواكه في الواجهة العربية
+            androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -179,6 +181,7 @@ fun GameBoard(
 
                 // Particle overlay layer
                 ParticleOverlay(system = particleSystem, cols = cols, rows = rows)
+            }
             }
         }
     }

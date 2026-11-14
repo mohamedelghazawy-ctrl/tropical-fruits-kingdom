@@ -98,7 +98,7 @@ fun IslandScreen(
         return Offset(x, y)
     }
 
-    Box(Modifier.fillMaxSize().background(Color(0xFF0B4F6C))) {
+    Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFFF7FBFC), Color(0xFFDCEEF2), Color(0xFFF2F8FA))))) {
         // العالم (الصورة + المباني) دائمًا LTR كي تتطابق الإحداثيات مع الصورة حتى في الواجهة العربية
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Box(
