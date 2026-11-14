@@ -24,6 +24,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -94,6 +97,8 @@ fun IslandScreen(
     }
 
     Box(Modifier.fillMaxSize().background(Color(0xFF0B4F6C))) {
+        // العالم (الصورة + المباني) دائمًا LTR كي تتطابق الإحداثيات مع الصورة حتى في الواجهة العربية
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Box(
             Modifier.fillMaxSize().onSizeChanged { viewport = it
                 if (scale == 0f && it.width > 0) { scale = max(0.34f, max(it.width / worldPxW, it.height / worldPxH)); pan = clampPan(Offset.Zero, scale) } }
@@ -115,6 +120,7 @@ fun IslandScreen(
                 val all = (Sites.ALL.map { it.id } + PALACE).sortedBy { IslandData.POS.getValue(it).second }
                 for (id in all) SiteView(engine, id, selected == id, now) { selected = id }
             }
+        }
         }
 
         // الشريط العلوي

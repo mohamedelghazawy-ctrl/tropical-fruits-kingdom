@@ -47,7 +47,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Image(
                         painter = painterResource(R.drawable.splash_gxb), contentDescription = "GameXBreak",
-                        modifier = Modifier.fillMaxWidth(0.86f), contentScale = ContentScale.Fit
+                        modifier = Modifier.fillMaxWidth(0.86f).widthIn(max = 520.dp).aspectRatio(640f / 1146f), contentScale = ContentScale.Fit
                     )
                 }
             } else {

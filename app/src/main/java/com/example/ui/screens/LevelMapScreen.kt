@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -184,7 +185,7 @@ fun LevelMapScreen(
                                 unlocked = unlockedR,
                                 stars = rescueStars[k] ?: 0,
                                 onClick = { if (unlockedR) onSelectRescue(k) },
-                                modifier = Modifier.offset(
+                                modifier = Modifier.absoluteOffset(
                                     x = widthDp * islandX(i) - ISLAND_COLUMN_WIDTH / 2,
                                     y = centerY(i) - 58.dp
                                 )
@@ -199,7 +200,7 @@ fun LevelMapScreen(
                             isCurrent = level.levelNumber == currentLevel,
                             stars = levelStars[level.levelNumber] ?: 0,
                             onClick = { if (unlocked) onSelectLevel(level.levelNumber) },
-                            modifier = Modifier.offset(
+                            modifier = Modifier.absoluteOffset(
                                 x = widthDp * islandX(i) - ISLAND_COLUMN_WIDTH / 2,
                                 y = centerY(i) - 58.dp
                             )
