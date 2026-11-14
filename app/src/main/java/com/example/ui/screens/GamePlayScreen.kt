@@ -257,8 +257,7 @@ fun GamePlayScreen(
                     hasNextLevel = hasNext,
                     onNextLevel = onNextLevelClick,
                     onRestart = onRestartClick,
-                    onMainMenu = onMainMenuClick,
-                    onExit = { (ctx as? android.app.Activity)?.finishAffinity() }
+                    onMainMenu = onMainMenuClick
                 )
             }
             GameStatus.LOST -> {
@@ -287,7 +286,8 @@ fun GamePlayScreen(
                     onHapticsToggle = onHapticsToggle,
                     onResume = onResumeClick,
                     onRestart = onRestartClick,
-                    onMainMenu = onMainMenuClick
+                    onMainMenu = onMainMenuClick,
+                    onExit = { (ctx as? android.app.Activity)?.finishAffinity() }
                 )
             }
             GameStatus.PLAYING -> {

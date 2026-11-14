@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -115,7 +116,7 @@ fun GameBoard(
                     // المفاتيح ثابتة: لا نعيد تشغيل الإيماءة عند كل تغيير في اللوحة
                     .pointerInput(rows, cols, cellWidthPx, cellHeightPx) {
                         // السحب يُكتشف في المرحلة الأولى قبل لمسات الفواكه؛ التبديل بسحب الفاكهة نحو جارتها
-                        androidx.compose.foundation.gestures.awaitEachGesture {
+                        awaitEachGesture {
                             val down = awaitFirstDown(requireUnconsumed = false, pass = androidx.compose.ui.input.pointer.PointerEventPass.Initial)
                             val startC = (down.position.x / cellWidthPx).toInt().coerceIn(0, cols - 1)
                             val startR = (down.position.y / cellHeightPx).toInt().coerceIn(0, rows - 1)
