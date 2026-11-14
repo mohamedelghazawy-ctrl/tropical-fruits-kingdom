@@ -62,6 +62,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
@@ -155,6 +158,8 @@ fun LevelMapScreen(
                 scroll.scrollTo(target.toInt().coerceIn(0, scroll.maxValue))
             }
 
+            // الخريطة بإحداثيات مطلقة (يسار→يمين) حتى لا تنقلب في الواجهة العربية
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             Box(modifier = Modifier.fillMaxSize().verticalScroll(scroll)) {
                 Box(
                     modifier = Modifier
@@ -242,6 +247,7 @@ fun LevelMapScreen(
                         }
                     }
                 }
+            }
             }
         }
 

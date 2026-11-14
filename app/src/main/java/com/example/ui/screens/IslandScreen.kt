@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.ui.unit.Dp
 import com.example.island.*
 import com.example.island.IslandData.BDS
@@ -112,7 +113,7 @@ fun IslandScreen(
                 }
         ) {
             if (scale > 0f) Box(
-                Modifier.size(WORLD_W.dp, WORLD_H.dp).graphicsLayer {
+                Modifier.wrapContentSize(Alignment.TopStart, unbounded = true).size(WORLD_W.dp, WORLD_H.dp).graphicsLayer {
                     transformOrigin = TransformOrigin(0f, 0f); scaleX = scale; scaleY = scale; translationX = pan.x; translationY = pan.y
                 }.clickable(indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }) { selected = null }
             ) {
