@@ -359,7 +359,8 @@ fun PauseDialog(
     onHapticsToggle: (Boolean) -> Unit,
     onResume: () -> Unit,
     onRestart: () -> Unit,
-    onMainMenu: () -> Unit
+    onMainMenu: () -> Unit,
+    onExit: (() -> Unit)? = null
 ) {
     Dialog(onDismissRequest = onResume) {
         Card(
@@ -466,6 +467,17 @@ fun PauseDialog(
                     modifier = Modifier.fillMaxWidth().height(46.dp)
                 ) {
                     Text("القائمة الرئيسية 🏠", fontSize = 14.sp, color = Color.White)
+                }
+
+                if (onExit != null) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    OutlinedButton(
+                        onClick = onExit,
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier.fillMaxWidth().height(46.dp)
+                    ) {
+                        Text("خروج من اللعبة 🚪", fontSize = 14.sp, color = Color(0xFFFF8A80))
+                    }
                 }
             }
         }

@@ -9,7 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -114,39 +114,34 @@ fun GameBoard(
                     }
                     // المفاتيح ثابتة: لا نعيد تشغيل الإيماءة عند كل تغيير في اللوحة
                     .pointerInput(rows, cols, cellWidthPx, cellHeightPx) {
-                        var startR = -1
-                        var startC = -1
-                        var totalX = 0f
-                        var totalY = 0f
-                        var swiped = false
-                        detectDragGestures(
-                            onDragStart = { offset ->
-                                startC = (offset.x / cellWidthPx).toInt().coerceIn(0, cols - 1)
-                                startR = (offset.y / cellHeightPx).toInt().coerceIn(0, rows - 1)
-                                totalX = 0f; totalY = 0f; swiped = false
-                            },
-                            onDrag = { change, dragAmount ->
-                                change.consume()
-                                if (swiped || startR < 0) return@detectDragGestures
-                                totalX += dragAmount.x
-                                totalY += dragAmount.y
-                                val threshold = cellWidthPx * 0.18f
-                                val ax = kotlin.math.abs(totalX)
-                                val ay = kotlin.math.abs(totalY)
+                        // السحب يُكتشف في المرحلة الأولى قبل لمسات الفواكه؛ التبديل بسحب الفاكهة نحو جارتها
+                        androidx.compose.foundation.gestures.awaitEachGesture {
+                            val down = awaitFirstDown(requireUnconsumed = false, pass = androidx.compose.ui.input.pointer.PointerEventPass.Initial)
+                            val startC = (down.position.x / cellWidthPx).toInt().coerceIn(0, cols - 1)
+                            val startR = (down.position.y / cellHeightPx).toInt().coerceIn(0, rows - 1)
+                            val threshold = cellWidthPx * 0.28f
+                            var swiped = false
+                            while (true) {
+                                val ev = awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial)
+                                val ch = ev.changes.firstOrNull { it.id == down.id } ?: break
+                                if (!ch.pressed) break
+                                if (swiped) { ch.consume(); continue }
+                                val dx = ch.position.x - down.position.x
+                                val dy = ch.position.y - down.position.y
+                                val ax = kotlin.math.abs(dx); val ay = kotlin.math.abs(dy)
                                 if (ax > threshold || ay > threshold) {
                                     swiped = true
+                                    ch.consume()
                                     if (ax > ay) {
-                                        if (totalX > 0 && startC + 1 < cols) currentOnSwipe(startR, startC, startR, startC + 1)
-                                        else if (totalX < 0 && startC - 1 >= 0) currentOnSwipe(startR, startC, startR, startC - 1)
+                                        if (dx > 0 && startC + 1 < cols) currentOnSwipe(startR, startC, startR, startC + 1)
+                                        else if (dx < 0 && startC - 1 >= 0) currentOnSwipe(startR, startC, startR, startC - 1)
                                     } else {
-                                        if (totalY > 0 && startR + 1 < rows) currentOnSwipe(startR, startC, startR + 1, startC)
-                                        else if (totalY < 0 && startR - 1 >= 0) currentOnSwipe(startR, startC, startR - 1, startC)
+                                        if (dy > 0 && startR + 1 < rows) currentOnSwipe(startR, startC, startR + 1, startC)
+                                        else if (dy < 0 && startR - 1 >= 0) currentOnSwipe(startR, startC, startR - 1, startC)
                                     }
                                 }
-                            },
-                            onDragEnd = { startR = -1; swiped = false },
-                            onDragCancel = { startR = -1; swiped = false }
-                        )
+                            }
+                        }
                     }
             ) {
                 // Render Tiles with identity keys to animate gravity falling and prevent disappearing tiles

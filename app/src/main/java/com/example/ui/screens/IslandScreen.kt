@@ -92,8 +92,9 @@ fun IslandScreen(
 
     fun clampPan(p: Offset, k: Float): Offset {
         val w = worldPxW * k; val h = worldPxH * k
-        val x = if (w <= viewport.width) (viewport.width - w) / 2 else p.x.coerceIn(viewport.width - w, 0f)
-        val y = if (h <= viewport.height) (viewport.height - h) / 2 else p.y.coerceIn(viewport.height - h, 0f)
+        val m = with(density) { 56.dp.toPx() }   // حافة مياه حول الجزيرة
+        val x = if (w + 2 * m <= viewport.width) (viewport.width - w) / 2 else p.x.coerceIn(viewport.width - w - m, m)
+        val y = if (h + 2 * m <= viewport.height) (viewport.height - h) / 2 else p.y.coerceIn(viewport.height - h - m, m)
         return Offset(x, y)
     }
 
@@ -125,7 +126,8 @@ fun IslandScreen(
         }
 
         // الشريط العلوي
-        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.fillMaxWidth().statusBarsPadding().padding(8.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             FilledTonalButton(onClick = onBack) { Text("➜") }
             Spacer(Modifier.width(8.dp))
             Chip("💎 ${fa(engine.s.gems)}")
@@ -133,6 +135,9 @@ fun IslandScreen(
             Chip("👷 ${fa(engine.s.q.size)}/${fa(engine.builders(now))}")
             Spacer(Modifier.width(6.dp))
             Chip("🏠 ${fa(engine.assigned)}/${fa(engine.residents)}")
+        }
+        Spacer(Modifier.height(6.dp))
+        Chip("🎒 🔨${fa(bagCount(Item.HAMMER))}  🌪️${fa(bagCount(Item.SHUFFLE))}  ⚡${fa(bagCount(Item.ROW))}  🌊${fa(bagCount(Item.COL))}")
         }
 
         // لوحة تفاصيل المبنى

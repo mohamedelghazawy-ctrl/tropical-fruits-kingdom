@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +72,26 @@ fun GamePlayScreen(
     modifier: Modifier = Modifier
 ) {
     var showAd by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    // وضع ملء الشاشة: إخفاء أزرار النظام (تظهر مؤقتًا عند السحب من الحافة، وزر الرجوع يفتح قائمة الإيقاف)
+    val view = androidx.compose.ui.platform.LocalView.current
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    fun hideBars() {
+        val w = (ctx as? android.app.Activity)?.window ?: return
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(w, false)
+        if (android.os.Build.VERSION.SDK_INT >= 28) w.attributes = w.attributes.also { it.layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES }
+        androidx.core.view.WindowInsetsControllerCompat(w, view).let {
+            it.systemBarsBehavior = androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            it.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+        }
+    }
+    DisposableEffect(Unit) {
+        hideBars()
+        onDispose {
+            val w = (ctx as? android.app.Activity)?.window
+            if (w != null) androidx.core.view.WindowInsetsControllerCompat(w, view).show(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+        }
+    }
+    LaunchedEffect(gameState.status) { hideBars() }
     // Android Back button handler
     BackHandler {
         if (gameState.status == GameStatus.PLAYING) {
@@ -166,6 +188,7 @@ fun GamePlayScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .displayCutoutPadding()
                 .statusBarsPadding()
                 .navigationBarsPadding()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -234,7 +257,8 @@ fun GamePlayScreen(
                     hasNextLevel = hasNext,
                     onNextLevel = onNextLevelClick,
                     onRestart = onRestartClick,
-                    onMainMenu = onMainMenuClick
+                    onMainMenu = onMainMenuClick,
+                    onExit = { (ctx as? android.app.Activity)?.finishAffinity() }
                 )
             }
             GameStatus.LOST -> {
