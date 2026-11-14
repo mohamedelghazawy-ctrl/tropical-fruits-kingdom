@@ -1,0 +1,6 @@
+{
+  "name": "Tropical Crush",
+  "description": "لعبة مطابقة فواكه استوائية ممتعة وملونة بتأثيرات بصرية استعراضية ومستويات شيقة",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">مملكة الفواكه الاستوائية</string>
+    <string name="title_arabic">سحق الفواكه الاستوائية</string>
+    <string name="subtitle_adventure">مغامرة الجزيرة الساحرة</string>
+    <string name="play">ابدأ اللعب</string>
+    <string name="select_level">اختر المستوى</string>
+    <string name="level">المستوى</string>
+    <string name="score">النقاط</string>
+    <string name="target">الهدف</string>
+    <string name="moves">الحركات المتبقية</string>
+    <string name="moves_left">حركة</string>
+    <string name="combo">كومبو رائع!</string>
+    <string name="level_complete">أحسنت! فوز استوائي!</string>
+    <string name="level_failed">نفدت الحركات!</string>
+    <string name="restart">إعادة المحاولة</string>
+    <string name="next_level">المستوى التالي</string>
+    <string name="pause">إيقاف مؤقت</string>
+    <string name="resume">استمرار</string>
+    <string name="quit">القائمة الرئيسية</string>
+    <string name="sound">المؤثرات الصوتية</string>
+    <string name="vibration">الاهتزاز</string>
+    
+    <!-- Tropical Fruits -->
+    <string name="fruit_pineapple">أناناس ذهبي</string>
+    <string name="fruit_dragonfruit">دراجون فروت</string>
+    <string name="fruit_watermelon">بطيخ منعش</string>
+    <string name="fruit_mango">مانجو استوائي</string>
+    <string name="fruit_coconut">جوز الهند</string>
+    <string name="fruit_kiwi">كيوي ساطع</string>
+    <string name="fruit_starfruit">فاكهة النجمة</string>
+
+    <!-- Boosters & Special powers -->
+    <string name="booster_coconut_bomb">قنبلة جوز الهند</string>
+    <string name="booster_tropical_blender">إعصار الفواكه</string>
+    <string name="booster_sun_ray">شعاع الشمس</string>
+    <string name="booster_color_splash">رذاذ الألوان</string>
+</resources>
