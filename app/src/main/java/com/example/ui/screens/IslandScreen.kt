@@ -182,8 +182,8 @@ private fun SiteView(engine: IslandEngine, id: Int, selected: Boolean, now: Long
     val dpX = px * IFAC; val dpY = py * IFAC
     val name = if (id == PALACE) "قصر الملكة" else site.name
     if (id == PALACE) {
-        Box(Modifier.offset(x = (dpX - 70).dp, y = (dpY - 110).dp).size(140.dp, 130.dp).clickable(indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }) { onTap() },
-            contentAlignment = Alignment.TopCenter) { Text("🏰", fontSize = 84.sp) }
+        Box(Modifier.offset(x = (dpX - 160).dp, y = (dpY - 330).dp).size(320.dp, 340.dp).clickable(indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }) { onTap() },
+            contentAlignment = Alignment.TopCenter) { }
         Tag(name + " ${fa(engine.s.pal)}", dpX, dpY + 12, selected, true)
         return
     }

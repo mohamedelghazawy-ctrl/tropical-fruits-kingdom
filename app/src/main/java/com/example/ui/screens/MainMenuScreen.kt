@@ -200,7 +200,7 @@ fun MainMenuScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "سحق الفواكه",
+                    text = "مملكة الفواكه",
                     style = TextStyle(
                         fontSize = 38.sp,
                         fontWeight = FontWeight.Black,
