@@ -68,6 +68,10 @@ fun FruitComposable(
         Pair(1f, 0f)
     }
 
+    // صور ثابتة لكل الأجهزة (بدل إيموجي الخط الذي يختلف من هاتف لآخر)
+    val emoRes = emoResOf(fruitType)
+    val emoBitmap = if (emoRes != null) androidx.compose.ui.res.imageResource(emoRes) else null
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -113,13 +117,13 @@ fun FruitComposable(
 
             // Draw base fruit graphics (فاكهة النجمة تُرسم نجمةً فقط بلا فاكهة تحتها)
             if (specialType != SpecialType.STARFRUIT_RAINBOW) when (fruitType) {
-                FruitType.PINEAPPLE -> drawEmojiFruit(fruitType.emoji, w, center)
+                FruitType.PINEAPPLE -> emoBitmap?.let { drawEmoImage(it, w, center) }
                 FruitType.DRAGONFRUIT -> drawDragonfruit(w, h, center)
-                FruitType.WATERMELON -> drawEmojiFruit(fruitType.emoji, w, center)
-                FruitType.MANGO -> drawEmojiFruit(fruitType.emoji, w, center)
-                FruitType.COCONUT -> drawEmojiFruit(fruitType.emoji, w, center)
-                FruitType.KIWI -> drawEmojiFruit(fruitType.emoji, w, center)
-                FruitType.STRAWBERRY -> drawEmojiFruit(fruitType.emoji, w, center)
+                FruitType.WATERMELON -> emoBitmap?.let { drawEmoImage(it, w, center) }
+                FruitType.MANGO -> emoBitmap?.let { drawEmoImage(it, w, center) }
+                FruitType.COCONUT -> emoBitmap?.let { drawEmoImage(it, w, center) }
+                FruitType.KIWI -> emoBitmap?.let { drawEmoImage(it, w, center) }
+                FruitType.STRAWBERRY -> emoBitmap?.let { drawEmoImage(it, w, center) }
             }
 
             // Draw special overlays
@@ -346,13 +350,24 @@ private fun DrawScope.drawWatermelon(w: Float, h: Float, center: Offset) {
     )
 }
 
-private val mangoPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { textAlign = android.graphics.Paint.Align.CENTER }
+private fun emoResOf(t: FruitType): Int? = when (t) {
+    FruitType.MANGO -> com.example.R.drawable.emo_mango
+    FruitType.WATERMELON -> com.example.R.drawable.emo_watermelon
+    FruitType.PINEAPPLE -> com.example.R.drawable.emo_pineapple
+    FruitType.STRAWBERRY -> com.example.R.drawable.emo_strawberry
+    FruitType.KIWI -> com.example.R.drawable.emo_kiwi
+    FruitType.COCONUT -> com.example.R.drawable.emo_coconut
+    else -> null
+}
 
-/** الفواكه تُرسم بإيموجي الهاتف ليتطابق شكلها مع أيقونة الهدف في الشريط العلوي (عدا التنين). */
-private fun DrawScope.drawEmojiFruit(emoji: String, w: Float, center: Offset) {
-    mangoPaint.textSize = w * 0.78f
-    val fm = mangoPaint.fontMetrics
-    drawContext.canvas.nativeCanvas.drawText(emoji, center.x, center.y - (fm.ascent + fm.descent) / 2f, mangoPaint)
+private fun DrawScope.drawEmoImage(img: androidx.compose.ui.graphics.ImageBitmap, w: Float, center: Offset) {
+    val d = (w * 0.82f).toInt()
+    drawImage(
+        image = img,
+        dstOffset = androidx.compose.ui.unit.IntOffset((center.x - d / 2f).toInt(), (center.y - d / 2f).toInt()),
+        dstSize = androidx.compose.ui.unit.IntSize(d, d),
+        filterQuality = androidx.compose.ui.graphics.FilterQuality.High
+    )
 }
 
 private fun DrawScope.drawMangoOld(w: Float, h: Float, center: Offset) {
