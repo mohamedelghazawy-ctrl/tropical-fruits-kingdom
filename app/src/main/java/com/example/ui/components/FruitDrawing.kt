@@ -20,6 +20,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -70,7 +72,7 @@ fun FruitComposable(
 
     // صور ثابتة لكل الأجهزة (بدل إيموجي الخط الذي يختلف من هاتف لآخر)
     val emoRes = emoResOf(fruitType)
-    val emoBitmap = if (emoRes != null) androidx.compose.ui.res.imageResource(emoRes) else null
+    val emoBitmap = if (emoRes != null) ImageBitmap.imageResource(id = emoRes) else null
 
     Box(
         modifier = modifier,
