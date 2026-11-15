@@ -55,7 +55,7 @@ private fun fmtMs(ms: Long): String {
 @Composable
 private fun drawableId(name: String): Int {
     val ctx = LocalContext.current
-    return remember(name) { ctx.resources.getIdentifier(name, "drawable", ctx.packageName) }
+    return remember(name) { ctx.resources.getIdentifier(name, "drawable", ctx.packageName).takeIf { it != 0 } ?: android.R.drawable.ic_menu_gallery }
 }
 
 /**
