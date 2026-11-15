@@ -16,27 +16,25 @@ jobs:
           sdkmanager "build-tools;36.0.0" "platforms;android-36.1"; sdkmanager "platforms;android-37.0" || sdkmanager "platforms;android-37"
       - name: Create debug keystore
         run: keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-      - name: Decode upload keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-        run: echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+      - name: Create temporary signing key (the real signing is done on your phone)
+        run: keytool -genkeypair -keystore "$RUNNER_TEMP/temp.jks" -storepass temp12345 -alias upload -keypass temp12345 -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Temp,O=Temp,C=US"
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: "9.3.1" }
       - name: Build signed AAB + release APK
         env:
-          KEYSTORE_PATH: ${{ runner.temp }}/upload.jks
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_PATH: ${{ runner.temp }}/temp.jks
+          STORE_PASSWORD: temp12345
+          KEY_PASSWORD: temp12345
+          KEY_ALIAS: upload
         run: gradle :app:bundleRelease :app:assembleRelease --stacktrace 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
       - name: Upload AAB
         if: success()
         uses: actions/upload-artifact@v4
-        with: { name: tropical-kingdom-release-aab, path: app/build/outputs/bundle/release/*.aab }
+        with: { name: tropical-kingdom-release-aab-unsigned, path: app/build/outputs/bundle/release/*.aab }
       - name: Upload release APK (for testing on phone)
         if: success()
         uses: actions/upload-artifact@v4
-        with: { name: tropical-kingdom-release-apk, path: app/build/outputs/apk/release/*.apk }
+        with: { name: tropical-kingdom-release-apk-tempsigned, path: app/build/outputs/apk/release/*.apk }
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
