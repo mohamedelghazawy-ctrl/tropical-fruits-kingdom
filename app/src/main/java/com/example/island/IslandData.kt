@@ -11,11 +11,11 @@ object IslandData {
 
     /** مركز القاعدة لكل مبنى (id -> x,y). القصر id = 0. */
     val POS: Map<Int, Pair<Float, Float>> = mapOf(
-        1 to (320f to 830f), 2 to (1400f to 830f), 3 to (492f to 1110f), 4 to (1254f to 1122f),
-        5 to (198f to 1380f), 6 to (876f to 1368f), 7 to (1530f to 1392f), 8 to (430f to 1676f),
-        9 to (1326f to 1674f), 10 to (534f to 1908f), 11 to (876f to 1980f), 12 to (1236f to 1932f),
+        1 to (320f to 830f), 8 to (1400f to 830f), 3 to (492f to 1110f), 4 to (1254f to 1122f),
+        5 to (198f to 1380f), 6 to (876f to 1368f), 10 to (1530f to 1392f), 2 to (430f to 1676f),
+        9 to (1326f to 1674f), 11 to (534f to 1908f), 7 to (876f to 1980f), 12 to (1236f to 1932f),
         0 to (896f to 470f)
-    )
+    ).mapValues { (id, p) -> if (id == 0) p else p.first to (p.second + 48f) }
 
     /** قياسات صور المباني المرمَّمة (BMETA) والأطلال (RMETA): العرض والارتفاع وإزاحة القاعدة. */
     data class Meta(val w: Int, val h: Int, val off: Int)

@@ -80,7 +80,7 @@ import kotlin.math.PI
 import kotlin.math.sin
 import kotlinx.coroutines.flow.first
 
-private const val LEVEL_COUNT = 40
+private const val LEVEL_COUNT = 95
 private const val RESCUE_EVERY = 5
 
 /** مواضع الخريطة: الجزر بالترتيب، وبعد كل ٥ جزر عقدة إنقاذ (قيمة سالبة = -(رقم الإنقاذ)). */
