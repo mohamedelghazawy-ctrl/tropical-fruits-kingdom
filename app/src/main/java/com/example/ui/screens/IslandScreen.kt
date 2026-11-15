@@ -187,8 +187,15 @@ private fun SiteView(engine: IslandEngine, id: Int, selected: Boolean, now: Long
     val dpX = px * IFAC; val dpY = py * IFAC
     val name = if (id == PALACE) "قصر الملكة" else site.name
     if (id == PALACE) {
-        Box(Modifier.offset(x = (dpX - 160).dp, y = (dpY - 330).dp).size(320.dp, 340.dp).clickable(indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }) { onTap() },
-            contentAlignment = Alignment.TopCenter) { }
+        // منطقة اللمس تغطي القصر كله (البرجين والقبة والواجهة) دون الخروج عن شكله — بإحداثيات صورة الجزيرة
+        val ms = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+        for ((hx, hy, hw, hh) in listOf(
+            listOf(399, 55, 140, 515),   // البرج الأيسر
+            listOf(815, 55, 140, 515),   // البرج الأيمن
+            listOf(539, 85, 276, 485)    // القبة والواجهة والباب
+        )) {
+            Box(Modifier.offset(x = hx.dp, y = hy.dp).size(hw.dp, hh.dp).clickable(indication = null, interactionSource = ms) { onTap() })
+        }
         Tag(name + " ${fa(engine.s.pal)}", dpX, dpY + 12, selected, true)
         return
     }

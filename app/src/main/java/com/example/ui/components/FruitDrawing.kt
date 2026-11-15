@@ -119,13 +119,13 @@ fun FruitComposable(
 
             // Draw base fruit graphics (فاكهة النجمة تُرسم نجمةً فقط بلا فاكهة تحتها)
             if (specialType != SpecialType.STARFRUIT_RAINBOW) when (fruitType) {
-                FruitType.PINEAPPLE -> emoBitmap?.let { drawEmoImage(it, w, center) }
+                FruitType.PINEAPPLE -> emoBitmap?.let { drawEmoImage(it, w, center, 1.3f) }
                 FruitType.DRAGONFRUIT -> drawDragonfruit(w, h, center)
-                FruitType.WATERMELON -> emoBitmap?.let { drawEmoImage(it, w, center) }
-                FruitType.MANGO -> emoBitmap?.let { drawEmoImage(it, w, center) }
-                FruitType.COCONUT -> emoBitmap?.let { drawEmoImage(it, w, center) }
-                FruitType.KIWI -> emoBitmap?.let { drawEmoImage(it, w, center) }
-                FruitType.STRAWBERRY -> emoBitmap?.let { drawEmoImage(it, w, center) }
+                FruitType.WATERMELON -> emoBitmap?.let { drawEmoImage(it, w, center, 1f) }
+                FruitType.MANGO -> emoBitmap?.let { drawEmoImage(it, w, center, 1f) }
+                FruitType.COCONUT -> emoBitmap?.let { drawEmoImage(it, w, center, 1f) }
+                FruitType.KIWI -> emoBitmap?.let { drawEmoImage(it, w, center, 1f) }
+                FruitType.STRAWBERRY -> emoBitmap?.let { drawEmoImage(it, w, center, 1f) }
             }
 
             // Draw special overlays
@@ -362,8 +362,8 @@ private fun emoResOf(t: FruitType): Int? = when (t) {
     else -> null
 }
 
-private fun DrawScope.drawEmoImage(img: androidx.compose.ui.graphics.ImageBitmap, w: Float, center: Offset) {
-    val d = (w * 0.82f).toInt()
+private fun DrawScope.drawEmoImage(img: androidx.compose.ui.graphics.ImageBitmap, w: Float, center: Offset, k: Float = 1f) {
+    val d = (w * 0.82f * k).toInt()
     drawImage(
         image = img,
         dstOffset = androidx.compose.ui.unit.IntOffset((center.x - d / 2f).toInt(), (center.y - d / 2f).toInt()),
