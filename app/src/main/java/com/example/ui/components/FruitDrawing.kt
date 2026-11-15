@@ -20,6 +20,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -345,7 +346,16 @@ private fun DrawScope.drawWatermelon(w: Float, h: Float, center: Offset) {
     )
 }
 
+private val mangoPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { textAlign = android.graphics.Paint.Align.CENTER }
+
+/** المانجا تُرسم بإيموجي الهاتف 🥭 ليتطابق شكلها مع أيقونة الهدف في الشريط العلوي. */
 private fun DrawScope.drawMango(w: Float, h: Float, center: Offset) {
+    mangoPaint.textSize = w * 0.78f
+    val fm = mangoPaint.fontMetrics
+    drawContext.canvas.nativeCanvas.drawText("🥭", center.x, center.y - (fm.ascent + fm.descent) / 2f, mangoPaint)
+}
+
+private fun DrawScope.drawMangoOld(w: Float, h: Float, center: Offset) {
     // Mango body - smooth teardrop / kidney shape
     val mangoCenter = center + Offset(0f, h * 0.04f)
     val rX = w * 0.36f

@@ -225,7 +225,7 @@ fun GameTopBar(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                FruitComposable(fruitType = fruit, modifier = Modifier.size(24.dp))
+                                Text(fruit.emoji, fontSize = 16.sp)
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = if (isDone) "✓" else "$collected/$target",
