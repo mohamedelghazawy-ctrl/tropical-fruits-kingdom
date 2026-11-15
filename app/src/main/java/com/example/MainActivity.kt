@@ -65,24 +65,24 @@ class MainActivity : ComponentActivity() {
                 val i = full.lastIndexOf("Caused by")
                 val shortTrace = if (i > 0) full.take(900) + "\n...\n" + full.substring(i).take(1800) else full.take(2500)
                 crashPrefs.edit().putString("trace", shortTrace).commit()
-            } catch (_: Throwable) {}
+            } catch (ex: Throwable) {}
             prevHandler?.uncaughtException(t, e)
         }
         setContent {
             TropicalCrushTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    var crash by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(crashPrefs.getString("trace", null)) }
+                    val crashState = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(crashPrefs.getString("trace", null)) }
                     TropicalCrushApp(viewModel = viewModel)
-                    crash?.let { msg ->
+                    crashState.value?.let { msg ->
                         androidx.compose.material3.AlertDialog(
-                            onDismissRequest = { crashPrefs.edit().remove("trace").apply(); crash = null },
+                            onDismissRequest = { crashPrefs.edit().remove("trace").apply(); crashState.value = null },
                             title = { androidx.compose.material3.Text("تقرير آخر انهيار (صوّر الشاشة وأرسلها)") },
                             text = {
                                 androidx.compose.foundation.layout.Box(Modifier.heightIn(max = 420.dp).verticalScroll(androidx.compose.foundation.rememberScrollState())) {
                                     androidx.compose.material3.Text(msg, fontSize = 10.sp, fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
                                 }
                             },
-                            confirmButton = { androidx.compose.material3.TextButton(onClick = { crashPrefs.edit().remove("trace").apply(); crash = null }) { androidx.compose.material3.Text("إغلاق") } }
+                            confirmButton = { androidx.compose.material3.TextButton(onClick = { crashPrefs.edit().remove("trace").apply(); crashState.value = null }) { androidx.compose.material3.Text("إغلاق") } }
                         )
                     }
                 }
