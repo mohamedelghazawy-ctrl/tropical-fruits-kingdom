@@ -7,6 +7,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,10 +56,35 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         hideSystemBars()
+        // مسجّل أعطال بسيط: يحفظ سبب الانهيار ويعرضه عند التشغيل التالي (للتشخيص بدون كمبيوتر)
+        val crashPrefs = getSharedPreferences("crash_report", MODE_PRIVATE)
+        val prevHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            try {
+                val full = android.util.Log.getStackTraceString(e)
+                val i = full.lastIndexOf("Caused by")
+                val shortTrace = if (i > 0) full.take(900) + "\n...\n" + full.substring(i).take(1800) else full.take(2500)
+                crashPrefs.edit().putString("trace", shortTrace).commit()
+            } catch (_: Throwable) {}
+            prevHandler?.uncaughtException(t, e)
+        }
         setContent {
             TropicalCrushTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
+                    var crash by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(crashPrefs.getString("trace", null)) }
                     TropicalCrushApp(viewModel = viewModel)
+                    crash?.let { msg ->
+                        androidx.compose.material3.AlertDialog(
+                            onDismissRequest = { crashPrefs.edit().remove("trace").apply(); crash = null },
+                            title = { androidx.compose.material3.Text("تقرير آخر انهيار (صوّر الشاشة وأرسلها)") },
+                            text = {
+                                androidx.compose.foundation.layout.Box(Modifier.heightIn(max = 420.dp).verticalScroll(androidx.compose.foundation.rememberScrollState())) {
+                                    androidx.compose.material3.Text(msg, fontSize = 10.sp, fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                                }
+                            },
+                            confirmButton = { androidx.compose.material3.TextButton(onClick = { crashPrefs.edit().remove("trace").apply(); crash = null }) { androidx.compose.material3.Text("إغلاق") } }
+                        )
+                    }
                 }
             }
         }
