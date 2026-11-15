@@ -113,13 +113,13 @@ fun FruitComposable(
 
             // Draw base fruit graphics (فاكهة النجمة تُرسم نجمةً فقط بلا فاكهة تحتها)
             if (specialType != SpecialType.STARFRUIT_RAINBOW) when (fruitType) {
-                FruitType.PINEAPPLE -> drawPineapple(w, h, center)
+                FruitType.PINEAPPLE -> drawEmojiFruit(fruitType.emoji, w, center)
                 FruitType.DRAGONFRUIT -> drawDragonfruit(w, h, center)
-                FruitType.WATERMELON -> drawWatermelon(w, h, center)
-                FruitType.MANGO -> drawMango(w, h, center)
-                FruitType.COCONUT -> drawCoconut(w, h, center)
-                FruitType.KIWI -> drawKiwi(w, h, center)
-                FruitType.STRAWBERRY -> drawStrawberry(w, h, center)
+                FruitType.WATERMELON -> drawEmojiFruit(fruitType.emoji, w, center)
+                FruitType.MANGO -> drawEmojiFruit(fruitType.emoji, w, center)
+                FruitType.COCONUT -> drawEmojiFruit(fruitType.emoji, w, center)
+                FruitType.KIWI -> drawEmojiFruit(fruitType.emoji, w, center)
+                FruitType.STRAWBERRY -> drawEmojiFruit(fruitType.emoji, w, center)
             }
 
             // Draw special overlays
@@ -348,11 +348,11 @@ private fun DrawScope.drawWatermelon(w: Float, h: Float, center: Offset) {
 
 private val mangoPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { textAlign = android.graphics.Paint.Align.CENTER }
 
-/** المانجا تُرسم بإيموجي الهاتف 🥭 ليتطابق شكلها مع أيقونة الهدف في الشريط العلوي. */
-private fun DrawScope.drawMango(w: Float, h: Float, center: Offset) {
+/** الفواكه تُرسم بإيموجي الهاتف ليتطابق شكلها مع أيقونة الهدف في الشريط العلوي (عدا التنين). */
+private fun DrawScope.drawEmojiFruit(emoji: String, w: Float, center: Offset) {
     mangoPaint.textSize = w * 0.78f
     val fm = mangoPaint.fontMetrics
-    drawContext.canvas.nativeCanvas.drawText("🥭", center.x, center.y - (fm.ascent + fm.descent) / 2f, mangoPaint)
+    drawContext.canvas.nativeCanvas.drawText(emoji, center.x, center.y - (fm.ascent + fm.descent) / 2f, mangoPaint)
 }
 
 private fun DrawScope.drawMangoOld(w: Float, h: Float, center: Offset) {
