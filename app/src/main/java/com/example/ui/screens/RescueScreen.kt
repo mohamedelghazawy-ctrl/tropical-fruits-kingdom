@@ -204,8 +204,7 @@ fun RescueScreen(
                 Spacer(Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (won || vm.revived) Button(onClick = { vm.restart() }) { Text("إعادة") }
-                    if (won && vm.state.level.id < RescueLevel.ALL.size) Button(onClick = { vm.nextLevel() }) { Text("التالي") }
-                    if (won) Button(onClick = onExit) { Text("الخريطة") }
+                    if (won) Button(onClick = onExit) { Text("متابعة إلى الجزيرة التالية ◀") }
                     else Button(onClick = onQuitToMenu) { Text("استسلام والخروج للقائمة الرئيسية") }
                 }
             }
