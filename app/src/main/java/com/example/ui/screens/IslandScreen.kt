@@ -80,9 +80,9 @@ fun IslandScreen(
     var pan by remember { mutableStateOf(Offset.Zero) }
     var viewport by remember { mutableStateOf(androidx.compose.ui.unit.IntSize.Zero) }
     val density = LocalDensity.current
-    val news = remember(version) { engine.takeNews() }
     var newsShown by remember { mutableStateOf<List<String>>(emptyList()) }
-    if (news.isNotEmpty()) newsShown = newsShown + news
+    LaunchedEffect(version) { val n = engine.takeNews(); if (n.isNotEmpty()) newsShown = (newsShown + n).takeLast(3) }
+    LaunchedEffect(newsShown) { if (newsShown.isNotEmpty()) { kotlinx.coroutines.delay(3500); newsShown = emptyList() } }
     var welcome by remember { mutableStateOf<List<Int>>(emptyList()) }
     LaunchedEffect(version) { val nw = engine.newResidents(); if (nw.isNotEmpty()) { welcome = welcome + nw; onChanged { } } }
 
@@ -149,11 +149,11 @@ fun IslandScreen(
         }
 
         // إشعارات (اكتمال بناء، وصول مراكب…)
-        if (newsShown.isNotEmpty()) AlertDialog(
-            onDismissRequest = { newsShown = emptyList() },
-            confirmButton = { TextButton(onClick = { newsShown = emptyList() }) { Text("حسنًا") } },
-            title = { Text("أخبار الجزيرة") }, text = { Column { newsShown.forEach { Text(it); Spacer(Modifier.height(4.dp)) } } }
-        )
+        if (newsShown.isNotEmpty()) Box(Modifier.fillMaxSize().statusBarsPadding().padding(top = 170.dp, start = 16.dp, end = 16.dp), contentAlignment = Alignment.TopCenter) {
+            Column(
+                Modifier.clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).background(Color(0xE6102A33)).clickable { newsShown = emptyList() }.padding(horizontal = 14.dp, vertical = 10.dp)
+            ) { newsShown.forEach { Text(it, color = Color.White, fontSize = 13.sp) } }
+        }
         // الترحيب بالسكان الجدد
         welcome.firstOrNull()?.let { idx ->
             AlertDialog(

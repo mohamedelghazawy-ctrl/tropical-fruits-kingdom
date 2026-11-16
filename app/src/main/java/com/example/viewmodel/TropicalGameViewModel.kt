@@ -568,6 +568,11 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
                 comboMessage = "إعصار الفواكه! 🌪️"
             )
         }
+        // تختفي الرسالة بعد لحظة بدل أن تبقى حتى المطابقة التالية
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(1400)
+            _gameState.update { if (it.comboMessage == "إعصار الفواكه! 🌪️") it.copy(comboMessage = null) else it }
+        }
     }
 
     private fun applyBooster(booster: BoosterType, targetTile: Tile) {
