@@ -75,6 +75,7 @@ fun RescueScreen(
             }
         )
     }
+    val snakeHead = ImageBitmap.imageResource(R.drawable.snake_head)
     var frame by remember { mutableLongStateOf(0L) }
     // إطار مستمر خفيف لاهتزاز الجذع/الثعبان فقط
     LaunchedEffect(Unit) { while (true) { androidx.compose.runtime.withFrameMillis { frame = it } } }
@@ -133,7 +134,7 @@ fun RescueScreen(
                     drawRect(Color(0xFF16302E))
                     val st = vm.state
                     // الثعبان (جسم أخضر متعرّج من الأعلى حتى snakeVis)
-                    drawSnake(vm, cs, frame)
+                    drawSnake(vm, cs, frame, snakeHead)
                     for (r in 0 until st.rows) for (c in 0 until st.cols) {
                         val cell = st.grid[r][c] ?: continue
                         when (cell.kind) {
@@ -234,21 +235,33 @@ private fun DrawScope.drawSeed(cell: Cell, x: Float, y: Float, cs: Float) {
     }
 }
 
-private fun DrawScope.drawSnake(vm: RescueViewModel, cs: Float, frame: Long) {
+private fun DrawScope.drawSnake(vm: RescueViewModel, cs: Float, frame: Long, head: ImageBitmap) {
     val l = vm.state.level
     val bottom = (vm.snakeVis + 1f).coerceAtMost(l.queenRow + 2f) * cs
     val x0 = cs * 0.5f
     var y = 0f
     var prev = Offset(x0, 0f)
+    var k = 0
     while (y < bottom) {
         y += cs * 0.2f
         val p = Offset(x0 + sin(y / cs * 2.2f + frame / 300f) * cs * 0.18f, y)
-        drawLine(Color(0xFF4CAF50), prev, p, cs * 0.5f)
+        drawLine(Color(0xFF6E7F27), prev, p, cs * 0.56f)
+        drawLine(Color(0xFF8A9A3A), prev + Offset(-cs * 0.08f, 0f), p + Offset(-cs * 0.08f, 0f), cs * 0.2f)
+        k++
+        if (k % 6 == 0) drawCircle(Color(0xFF4A4A22), cs * 0.1f, p + Offset(cs * 0.06f, 0f))
         prev = p
     }
-    drawCircle(Color(0xFF2E7D32), cs * 0.36f, prev)
-    drawCircle(Color.White, cs * 0.09f, prev + Offset(-cs * 0.12f, -cs * 0.04f))
-    drawCircle(Color.White, cs * 0.09f, prev + Offset(cs * 0.12f, -cs * 0.04f))
+    // رأس الثعبان (صورة): يُدار ٤٥° ليواجه الأسفل
+    val hw = cs * 1.9f
+    val hh = hw * head.height / head.width
+    val c = prev + Offset(cs * 0.15f, cs * 0.35f)
+    withTransform({ rotate(45f, c) }) {
+        drawImage(
+            head, srcSize = IntSize(head.width, head.height),
+            dstOffset = IntOffset((c.x - hw / 2).toInt(), (c.y - hh / 2).toInt()),
+            dstSize = IntSize(hw.toInt(), hh.toInt())
+        )
+    }
 }
 
 private fun DrawScope.drawTrunkAndQueen(vm: RescueViewModel, cs: Float, imgs: Map<QueenPose, ImageBitmap>, frame: Long) {

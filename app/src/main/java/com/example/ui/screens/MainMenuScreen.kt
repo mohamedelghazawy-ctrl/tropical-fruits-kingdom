@@ -195,7 +195,11 @@ fun MainMenuScreen(
                             modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("🎡", fontSize = 40.sp)
+                            androidx.compose.foundation.Image(
+                                painter = androidx.compose.ui.res.painterResource(com.example.R.drawable.wheel_icon),
+                                contentDescription = "عجلة الحظ",
+                                modifier = Modifier.size(64.dp)
+                            )
                             Spacer(modifier = Modifier.width(10.dp))
                             val t = if (wheelLeft <= 0) "عجلة الحظ!" else {
                                 val sec = wheelLeft / 1000
