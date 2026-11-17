@@ -187,18 +187,22 @@ fun MainMenuScreen(
                     }
                     Surface(
                         modifier = Modifier.clickable { showWheel = true },
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(26.dp),
                         color = if (wheelLeft <= 0) Color(0xFFE76F51) else Color(0xCC0E382A),
-                        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0x6602C39A))
+                        border = androidx.compose.foundation.BorderStroke(2.5.dp, if (wheelLeft <= 0) Color(0xFFFFD166) else Color(0x6602C39A))
                     ) {
-                        val t = if (wheelLeft <= 0) "🎡 عجلة الحظ!" else {
-                            val sec = wheelLeft / 1000
-                            "🎡 %d:%02d:%02d".format(sec / 3600, (sec % 3600) / 60, sec % 60)
+                        Row(
+                            modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("🎡", fontSize = 40.sp)
+                            Spacer(modifier = Modifier.width(10.dp))
+                            val t = if (wheelLeft <= 0) "عجلة الحظ!" else {
+                                val sec = wheelLeft / 1000
+                                "%d:%02d:%02d".format(sec / 3600, (sec % 3600) / 60, sec % 60)
+                            }
+                            Text(text = t, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
                         }
-                        Text(
-                            text = t, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                        )
                     }
                 }
 

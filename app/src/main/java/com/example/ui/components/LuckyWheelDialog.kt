@@ -137,6 +137,7 @@ fun LuckyWheelDialog(
                             }
                         }
                     }) { Text("🎡 ادور العجلة", fontSize = 16.sp) }
+                    TextButton(enabled = !spinning, onClick = onClose) { Text("إغلاق", color = Color.White) }
                 } else {
                     TextButton(enabled = !spinning, onClick = onClose) { Text("إغلاق", color = Color.White) }
                 }
