@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +73,10 @@ fun MainMenuScreen(
     soundEnabled: Boolean,
     hapticsEnabled: Boolean,
     totalStars: Int,
+    gems: Int = 0,
+    wheelReadyAt: Long = 0L,
+    onWheelSpin: () -> Pair<Int, com.example.model.WheelPrize>? = { null },
+    onWheelDouble: (com.example.model.WheelPrize) -> Unit = {},
     onPlayClick: () -> Unit,
     onMapClick: () -> Unit,
     onIslandClick: () -> Unit = {},
@@ -80,6 +85,17 @@ fun MainMenuScreen(
     modifier: Modifier = Modifier
 ) {
     var showSettings by remember { mutableStateOf(false) }
+    var showWheel by remember { mutableStateOf(false) }
+    var nowMs by remember { mutableStateOf(System.currentTimeMillis()) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        while (true) { kotlinx.coroutines.delay(1000); nowMs = System.currentTimeMillis() }
+    }
+    val wheelLeft = wheelReadyAt - nowMs
+    if (showWheel) {
+        com.example.ui.components.LuckyWheelDialog(
+            onSpin = onWheelSpin, onDouble = onWheelDouble, onClose = { showWheel = false }
+        )
+    }
 
     val infiniteTransition = rememberInfiniteTransition(label = "title_bounce")
     val bounceScale by infiniteTransition.animateFloat(
@@ -130,7 +146,7 @@ fun MainMenuScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Stars Chip
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Surface(
                     shape = RoundedCornerShape(20.dp),
                     color = Color(0xCC0E382A),
@@ -152,6 +168,36 @@ fun MainMenuScreen(
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
+                        )
+                    }
+                }
+
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color(0xCC0E382A),
+                        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0x6602C39A))
+                    ) {
+                        Text(
+                            text = "💎 $gems",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                        )
+                    }
+                    Surface(
+                        modifier = Modifier.clickable { showWheel = true },
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (wheelLeft <= 0) Color(0xFFE76F51) else Color(0xCC0E382A),
+                        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0x6602C39A))
+                    ) {
+                        val t = if (wheelLeft <= 0) "🎡 عجلة الحظ!" else {
+                            val sec = wheelLeft / 1000
+                            "🎡 %d:%02d:%02d".format(sec / 3600, (sec % 3600) / 60, sec % 60)
+                        }
+                        Text(
+                            text = t, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                         )
                     }
                 }

@@ -18,6 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
@@ -41,6 +47,15 @@ fun BoosterBar(
     onBoosterClick: (BoosterType) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var info by remember { mutableStateOf<BoosterType?>(null) }
+    info?.let { b ->
+        AlertDialog(
+            onDismissRequest = { info = null },
+            title = { Text("${b.icon} ${b.titleAr}", fontWeight = FontWeight.Bold) },
+            text = { Text(b.descriptionAr + "\n\nاضغط على الأداة ثم على الخلية المطلوبة لاستخدامها.") },
+            confirmButton = { TextButton(onClick = { info = null }) { Text("حسنًا") } }
+        )
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -82,7 +97,8 @@ fun BoosterBar(
                     booster = booster,
                     count = count,
                     isSelected = isSelected,
-                    onClick = { onBoosterClick(booster) }
+                    onClick = { onBoosterClick(booster) },
+                    onInfo = { info = booster }
                 )
             }
         }
@@ -94,8 +110,10 @@ private fun BoosterItem(
     booster: BoosterType,
     count: Int,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onInfo: () -> Unit
 ) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Box(
         contentAlignment = Alignment.TopEnd,
         modifier = Modifier.testTag("booster_${booster.name.lowercase()}")
@@ -127,6 +145,20 @@ private fun BoosterItem(
             }
         }
 
+        // Info badge
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(x = (-4).dp, y = (-4).dp)
+                .size(20.dp)
+                .background(Color(0xFF2A9D8F), CircleShape)
+                .border(1.dp, Color.White, CircleShape)
+                .clickable(onClick = onInfo),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("؟", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+
         // Count Badge
         Box(
             modifier = Modifier
@@ -143,5 +175,6 @@ private fun BoosterItem(
                 color = Color.White
             )
         }
+    }
     }
 }

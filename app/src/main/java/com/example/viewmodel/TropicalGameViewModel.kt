@@ -13,6 +13,9 @@ import com.example.island.IslandEngine
 import com.example.island.Item
 import com.example.island.Sites
 import com.example.model.BoosterType
+import com.example.model.LuckyWheel
+import com.example.model.WheelPrize
+import com.example.notify.ReadyNotifier
 import com.example.rescue.RescueLevel
 import com.example.model.FruitType
 import com.example.model.GameState
@@ -84,15 +87,63 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         return r
     }
 
+    private var lastBuildAt = -1L
+    private var lastBoatAt = -1L
+
     fun islandChanged() {
         prefs.edit().putString("island_save", island.encode()).apply()
         _islandVer.update { it + 1 }
+        syncReadyNotifications()
+    }
+
+    /** يجدول إشعار "جاهز" لأقرب بناء ومركب (يُعاد الجدولة فقط عند تغيّر الوقت). */
+    private fun syncReadyNotifications() {
+        try {
+            val app = getApplication<Application>()
+            val b = island.s.q.minOfOrNull { it.end } ?: 0L
+            if (b != lastBuildAt) {
+                lastBuildAt = b
+                if (b > 0) ReadyNotifier.schedule(app, ReadyNotifier.ID_BUILD, b, "🏗️ اكتمل البناء في جزيرة القصر!")
+                else ReadyNotifier.cancel(app, ReadyNotifier.ID_BUILD)
+            }
+            val bo = island.s.boats.filterNotNull().minOfOrNull { it.end } ?: 0L
+            if (bo != lastBoatAt) {
+                lastBoatAt = bo
+                if (bo > 0) ReadyNotifier.schedule(app, ReadyNotifier.ID_BOAT, bo, "⛵ وصل المركب! اجمع بضاعتك")
+                else ReadyNotifier.cancel(app, ReadyNotifier.ID_BOAT)
+            }
+        } catch (e: Exception) { }
+    }
+
+    // ───── عجلة الحظ ─────
+    fun wheelReadyAt(): Long = prefs.getLong("wheel_last", 0L) + LuckyWheel.COOLDOWN_MS
+
+    /** تدور العجلة إن كانت جاهزة؛ تعيد (فهرس القطعة, الجائزة) أو null. */
+    fun spinWheel(): Pair<Int, WheelPrize>? {
+        val now = System.currentTimeMillis()
+        if (now < wheelReadyAt()) return null
+        val idx = LuckyWheel.pickIndex(Random)
+        val prize = LuckyWheel.PRIZES[idx]
+        prefs.edit().putLong("wheel_last", now).apply()
+        applyPrize(prize)
+        ReadyNotifier.schedule(getApplication<Application>(), ReadyNotifier.ID_WHEEL, now + LuckyWheel.COOLDOWN_MS, "🎡 عجلة الحظ جاهزة للدوران!")
+        return idx to prize
+    }
+
+    /** مضاعفة الجائزة بعد مشاهدة إعلان. */
+    fun doublePrize(p: WheelPrize) = applyPrize(p)
+
+    private fun applyPrize(p: WheelPrize) {
+        if (p.gems > 0) { island.s.gems += p.gems; islandChanged() }
+        p.booster?.let { grantBooster(it, p.amount) }
     }
     /** جواهر قاعة الاحتفالات عند إنقاذ الملكة. */
     fun onRescueWon() { val b = island.hallBonus(); if (b > 0) { island.s.gems += b; islandChanged() } }
     fun dismissGate() { _gateMsg.value = null }
 
     init {
+        val w = wheelReadyAt()
+        if (w > System.currentTimeMillis()) ReadyNotifier.schedule(getApplication<Application>(), ReadyNotifier.ID_WHEEL, w, "🎡 عجلة الحظ جاهزة للدوران!")
         viewModelScope.launch {
             while (true) {
                 delay(1000)
@@ -236,8 +287,14 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
             return
         }
 
-        // 2. Normal Tap & Selection
+        // 1b. بلاط خاص: النقر يفعّله مباشرة في مكانه
         val selected = state.selectedTile
+        if (selected == null && state.board[tile.row][tile.col].hasSpecial()) {
+            useSpecial(tile.row, tile.col)
+            return
+        }
+
+        // 2. Normal Tap & Selection
         if (selected == null) {
             _gameState.update { it.copy(selectedTile = tile) }
             if (state.soundEnabled) soundHelper.playTap()
@@ -260,7 +317,21 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         if (inBonusRound || state.isBusyAnimating || state.status != GameStatus.PLAYING) return
         registerUserInteraction()
         _gameState.update { it.copy(selectedTile = null) }
+        // سحب بلاط خاص لأي جهة (حتى بدون مطابقة) يفعّله مباشرة
+        val inB = fromRow in state.board.indices && fromCol in state.board[0].indices
+        if (inB && state.board[fromRow][fromCol].hasSpecial() &&
+            GameEngine.isAdjacent(fromRow, fromCol, toRow, toCol)) {
+            useSpecial(fromRow, fromCol)
+            return
+        }
         handleSwap(fromRow, fromCol, toRow, toCol)
+    }
+
+    private fun useSpecial(r: Int, c: Int) {
+        viewModelScope.launch {
+            _gameState.update { it.copy(isBusyAnimating = true, selectedTile = null) }
+            resolveMatchesCascade(forced = setOf(r to c), consumeMove = true)
+        }
     }
 
     private fun handleSwap(r1: Int, c1: Int, r2: Int, c2: Int) {

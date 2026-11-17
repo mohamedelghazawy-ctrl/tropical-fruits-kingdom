@@ -56,6 +56,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         hideSystemBars()
+        com.example.notify.ReadyNotifier.ensureChannel(this)
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            val np = getSharedPreferences("tropical_crush_prefs", MODE_PRIVATE)
+            if (!np.getBoolean("notif_asked", false) &&
+                checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                np.edit().putBoolean("notif_asked", true).apply()
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 77)
+            }
+        }
         // مسجّل أعطال بسيط: يحفظ سبب الانهيار ويعرضه عند التشغيل التالي (للتشخيص بدون كمبيوتر)
         val crashPrefs = getSharedPreferences("crash_report", MODE_PRIVATE)
         val prevHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -130,6 +139,10 @@ fun TropicalCrushApp(viewModel: TropicalGameViewModel) {
                 soundEnabled = gameState.soundEnabled,
                 hapticsEnabled = gameState.hapticsEnabled,
                 totalStars = totalStars,
+                gems = viewModel.island.s.gems,
+                wheelReadyAt = viewModel.wheelReadyAt(),
+                onWheelSpin = { viewModel.spinWheel() },
+                onWheelDouble = { viewModel.doublePrize(it) },
                 onPlayClick = {
                     // Start next uncompleted level or level 1
                     val nextLevel = (1..LevelConfig.MAX_LEVEL).firstOrNull { lvl ->
