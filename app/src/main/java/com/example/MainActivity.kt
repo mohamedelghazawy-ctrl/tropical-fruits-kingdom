@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         hideSystemBars()
         com.example.notify.ReadyNotifier.ensureChannel(this)
+        com.example.ads.AdMobRewardedProvider.init(this)
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             val np = getSharedPreferences("tropical_crush_prefs", MODE_PRIVATE)
             if (!np.getBoolean("notif_asked", false) &&
