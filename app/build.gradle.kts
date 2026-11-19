@@ -38,8 +38,9 @@ android {
   buildTypes {
     release {
       isCrunchPngs = false
-      isMinifyEnabled = true
-      isShrinkResources = true
+      // R8 معطّل مؤقتًا: نسخة release كانت تنهار بعد إضافة AdMob
+      isMinifyEnabled = false
+      isShrinkResources = false
       // رموز native لتقارير الأعطال في Play Console
       ndk { debugSymbolLevel = "SYMBOL_TABLE" }
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
