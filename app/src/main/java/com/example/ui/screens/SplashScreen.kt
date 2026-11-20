@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -24,7 +25,7 @@ import com.example.island.IslandData
 import kotlinx.coroutines.delay
 
 /**
- * افتتاحية اللعبة: شاشة "GameXBreak" السوداء ٣ ثوانٍ، ثم صورة الملكة ٥ ثوانٍ مع شريط تحميل
+ * افتتاحية اللعبة: شاشة "GameXBreak" السوداء ٣ ثوانٍ، ثم صورة الملكة ٧ ثوانٍ مع شريط تحميل
  * وجملتين متغيّرتين في كل مرة.
  */
 @Composable
@@ -33,13 +34,25 @@ fun SplashScreen(onFinished: () -> Unit) {
     val lines = remember { IslandData.SPLASH_LINES.shuffled().take(2) }
     var lineIdx by remember { mutableIntStateOf(0) }
     val progress = remember { Animatable(0f) }
+    val lineAlpha = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
         delay(3000)
         phase = 1
-        progress.animateTo(1f, tween(5000, easing = LinearEasing))
+        progress.animateTo(1f, tween(7000, easing = LinearEasing))
     }
-    LaunchedEffect(phase) { if (phase == 1) { delay(2500); lineIdx = 1; delay(2500); onFinished() } }
+    // الجملتان تتبدّلان بتلاشٍ متتابع (لا تتداخلان) حتى لا تظهر جملة مشوّهة بينهما
+    LaunchedEffect(phase) {
+        if (phase == 1) {
+            lineAlpha.animateTo(1f, tween(300))
+            delay(2900)
+            lineAlpha.animateTo(0f, tween(250))
+            lineIdx = 1
+            lineAlpha.animateTo(1f, tween(300))
+            delay(3250)
+            onFinished()
+        }
+    }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         Crossfade(targetState = phase, animationSpec = tween(600), label = "splash") { p ->
@@ -62,12 +75,12 @@ fun SplashScreen(onFinished: () -> Unit) {
                 Modifier.align(Alignment.BottomCenter).fillMaxWidth().navigationBarsPadding().padding(horizontal = 32.dp, vertical = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Crossfade(targetState = lineIdx, animationSpec = tween(400), label = "line") { i ->
-                    Text(
-                        lines[i], color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 17.sp,
-                        modifier = Modifier.clip(RoundedCornerShape(14.dp)).background(Color(0x80000000)).padding(horizontal = 16.dp, vertical = 6.dp)
-                    )
-                }
+                Text(
+                    lines[lineIdx], color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 17.sp,
+                    modifier = Modifier
+                        .graphicsLayer { alpha = lineAlpha.value }
+                        .clip(RoundedCornerShape(14.dp)).background(Color(0x80000000)).padding(horizontal = 16.dp, vertical = 6.dp)
+                )
                 Spacer(Modifier.height(12.dp))
                 Box(Modifier.fillMaxWidth().height(12.dp).clip(RoundedCornerShape(99.dp)).background(Color(0x73000000))) {
                     Box(Modifier.fillMaxWidth(progress.value).fillMaxHeight().background(Color(0xFFFFB703)))
