@@ -75,7 +75,15 @@ fun LuckyWheelDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Text("🎡 عجلة الحظ", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFFD166))
+                androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
+                    androidx.compose.foundation.Image(
+                        painter = androidx.compose.ui.res.painterResource(com.example.R.drawable.wheel_icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(Modifier.padding(horizontal = 6.dp))
+                    Text("عجلة الحظ", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFFD166))
+                }
                 Text("▼", fontSize = 22.sp, color = Color(0xFFE76F51))
                 Canvas(modifier = Modifier.size(260.dp)) {
                     val r = size.minDimension / 2f
@@ -89,22 +97,33 @@ fun LuckyWheelDialog(
                                 topLeft = Offset.Zero, size = Size(size.width, size.height)
                             )
                             val mid = Math.toRadians((start + seg / 2f).toDouble())
-                            val lx = center.x + (r * 0.68f) * Math.cos(mid).toFloat()
-                            val ly = center.y + (r * 0.68f) * Math.sin(mid).toFloat()
+                            val lx = center.x + (r * 0.72f) * Math.cos(mid).toFloat()
+                            val ly = center.y + (r * 0.72f) * Math.sin(mid).toFloat()
                             val p = LuckyWheel.PRIZES[i]
-                            val paint = android.graphics.Paint().apply {
+                            val iconPaint = android.graphics.Paint().apply {
                                 textAlign = android.graphics.Paint.Align.CENTER
-                                textSize = 30.sp.toPx() * 0.8f
+                                textSize = 34.sp.toPx() * 0.8f
                                 isAntiAlias = true
+                            }
+                            val fill = android.graphics.Paint().apply {
+                                textAlign = android.graphics.Paint.Align.CENTER
+                                textSize = 17.sp.toPx()
+                                color = android.graphics.Color.WHITE
+                                isFakeBoldText = true
+                                isAntiAlias = true
+                            }
+                            val outline = android.graphics.Paint(fill).apply {
+                                style = android.graphics.Paint.Style.STROKE
+                                strokeWidth = 4.dp.toPx()
+                                color = android.graphics.Color.argb(200, 20, 30, 20)
                             }
                             drawContext.canvas.nativeCanvas.apply {
                                 save()
                                 rotate(start + seg / 2f + 90f, lx, ly)
-                                drawText(p.icon, lx, ly, paint)
-                                paint.textSize = 12.sp.toPx()
-                                paint.color = android.graphics.Color.WHITE
-                                paint.isFakeBoldText = true
-                                drawText(p.short, lx, ly + 16.sp.toPx(), paint)
+                                drawText(p.icon, lx, ly, iconPaint)
+                                val ty = ly + 24.sp.toPx()
+                                drawText(p.short, lx, ty, outline)
+                                drawText(p.short, lx, ty, fill)
                                 restore()
                             }
                         }
