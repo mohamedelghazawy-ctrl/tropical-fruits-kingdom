@@ -175,11 +175,7 @@ fun RescueScreen(
             }
         }
 
-        Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.Center) {
-            Button(onClick = { vm.toggleHammer() }, enabled = vm.hammers > 0 && !vm.busy) {
-                Text(if (vm.hammerMode) "🔨 اختر خلية" else "🔨 مطرقة × ${vm.hammers}")
-            }
-        }
+        // لا أدوات مساعدة في مستويات إنقاذ الملكة (تحدٍّ خاص)
     }
 
     if (vm.status != RescueStatus.PLAYING) {

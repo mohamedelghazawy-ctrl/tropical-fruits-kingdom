@@ -51,7 +51,7 @@ class RescueViewModel(application: Application) : AndroidViewModel(application) 
     var pose by mutableStateOf(QueenPose.IDLE); private set
     var busy by mutableStateOf(false); private set
     var hammerMode by mutableStateOf(false); private set
-    var hammers by mutableIntStateOf(3); private set
+    var hammers by mutableIntStateOf(0); private set
     var hammerCount = 0
 
     // الجائزة بعد الفوز (إعصار ثم مطرقة بالتناوب) وإعلان الإنقاذ بعد الخسارة
@@ -80,7 +80,7 @@ class RescueViewModel(application: Application) : AndroidViewModel(application) 
         poseJob?.cancel(); idleJob?.cancel()
         state = RescueEngine.newState(RescueLevel.get(id))
         animFrom.clear(); ghosts = emptyList()
-        status = RescueStatus.PLAYING; stars = 0; busy = false; hammerMode = false; hammers = 3
+        status = RescueStatus.PLAYING; stars = 0; busy = false; hammerMode = false; hammers = 0
         snakeVis = 0f; trunkAngle = 0f; trunkFalling = false; queenDx = 0f; queenDy = 0f; selected = null
         reward = null; rewardDoubled = false; revived = false
         pose = QueenPose.IDLE; animT = 1f; version++
