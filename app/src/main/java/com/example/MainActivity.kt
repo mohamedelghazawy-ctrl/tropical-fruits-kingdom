@@ -81,7 +81,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             TropicalCrushTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    val crashState = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(crashPrefs.getString("trace", null)) }
+                    // نافذة تقرير الانهيار للتشخيص فقط (نسخ debug)، لا تظهر للاعبين في نسخة المتجر
+                    val isDebuggable = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+                    val crashState = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(if (isDebuggable) crashPrefs.getString("trace", null) else null) }
                     TropicalCrushApp(viewModel = viewModel)
                     crashState.value?.let { msg ->
                         androidx.compose.material3.AlertDialog(
@@ -144,6 +146,15 @@ fun TropicalCrushApp(viewModel: TropicalGameViewModel) {
                 wheelReadyAt = viewModel.wheelReadyAt(),
                 onWheelSpin = { viewModel.spinWheel() },
                 onWheelDouble = { viewModel.doublePrize(it) },
+                dailyVersion = viewModel.dailyVersion.collectAsStateWithLifecycle().value,
+                dailyPending = { viewModel.dailyPending() },
+                dailyViews = { viewModel.dailyViews() },
+                dailyStreak = { viewModel.daily.streak() },
+                chestReady = { viewModel.daily.chestReady() },
+                chestClaimed = { viewModel.daily.chestClaimed() },
+                chestReward = { viewModel.daily.chestReward() },
+                onClaimDaily = { viewModel.claimDaily(it) },
+                onClaimChest = { viewModel.claimDailyChest() },
                 onPlayClick = {
                     // Start next uncompleted level or level 1
                     val nextLevel = (1..LevelConfig.MAX_LEVEL).firstOrNull { lvl ->

@@ -41,7 +41,20 @@ data class RescueLevel(
             RescueLevel(2, "إنقاذ ملكة الفواكه ٢ — البذور الثقيلة", moves = 32, snakeEvery = 3, heavy = listOf(8 to 3, 7 to 3)),
             RescueLevel(3, "إنقاذ ٣ — الجبل العالي", moves = 34, snakeEvery = 3, fruitTop = listOf(10, 8, 7, 5, 4)),
             RescueLevel(4, "إنقاذ ٤ — ثلاثة حجارة", moves = 34, snakeEvery = 3, heavy = listOf(8 to 3, 7 to 3, 7 to 4)),
-            RescueLevel(5, "إنقاذ ٥ — عاصفة الثعبان", moves = 32, snakeEvery = 2, fruitKinds = 6, fruitTop = listOf(10, 8, 7, 5, 4), heavy = listOf(9 to 3, 8 to 3, 7 to 4))
+            RescueLevel(5, "إنقاذ ٥ — عاصفة الثعبان", moves = 32, snakeEvery = 2, fruitKinds = 6, fruitTop = listOf(10, 8, 7, 5, 4), heavy = listOf(9 to 3, 8 to 3, 7 to 4)),
+            RescueLevel(6, "إنقاذ ٦ — الغابة المظلمة", moves = 32, snakeEvery = 3, fruitKinds = 5, fruitTop = listOf(10, 8, 7, 5, 4), heavy = listOf(9 to 3, 8 to 3)),
+            RescueLevel(7, "إنقاذ ٧ — جسر الصخور", moves = 32, snakeEvery = 3, fruitKinds = 6, fruitTop = listOf(10, 8, 7, 5, 4), heavy = listOf(9 to 3, 8 to 3, 7 to 3)),
+            RescueLevel(8, "إنقاذ ٨ — وادي الأفاعي", moves = 32, snakeEvery = 2, fruitKinds = 5, fruitTop = listOf(10, 9, 7, 6, 5), heavy = listOf(9 to 3, 8 to 3, 7 to 3)),
+            RescueLevel(9, "إنقاذ ٩ — كهف الحجارة", moves = 32, snakeEvery = 2, fruitKinds = 6, fruitTop = listOf(10, 9, 7, 6, 5), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4)),
+            RescueLevel(10, "إنقاذ ١٠ — الشلال الغاضب", moves = 30, snakeEvery = 2, fruitKinds = 6, fruitTop = listOf(10, 9, 8, 7, 6), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4)),
+            RescueLevel(11, "إنقاذ ١١ — جبل البركان", moves = 30, snakeEvery = 2, fruitKinds = 6, fruitTop = listOf(11, 10, 9, 8, 7), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4)),
+            RescueLevel(12, "إنقاذ ١٢ — ليلة بلا قمر", moves = 30, snakeEvery = 2, fruitKinds = 7, fruitTop = listOf(11, 10, 9, 8, 7), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4, 8 to 5)),
+            RescueLevel(13, "إنقاذ ١٣ — فخ الثعبان", moves = 30, snakeEvery = 2, fruitKinds = 7, fruitTop = listOf(11, 10, 10, 9, 8), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4, 8 to 5, 7 to 5)),
+            RescueLevel(14, "إنقاذ ١٤ — العاصفة الاستوائية", moves = 30, snakeEvery = 2, fruitKinds = 7, fruitTop = listOf(11, 10, 10, 9, 8), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4, 8 to 5, 7 to 5, 9 to 5)),
+            RescueLevel(15, "إنقاذ ١٥ — قلب الجزيرة", moves = 30, snakeEvery = 2, fruitKinds = 7, fruitTop = listOf(11, 10, 10, 10, 9), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4, 8 to 5, 7 to 5, 9 to 5, 10 to 3)),
+            RescueLevel(16, "إنقاذ ١٦ — حصن الحجارة", moves = 30, snakeEvery = 2, fruitKinds = 7, fruitTop = listOf(11, 10, 10, 10, 9), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4, 8 to 5, 7 to 5, 9 to 5, 10 to 3, 10 to 4)),
+            RescueLevel(17, "إنقاذ ١٧ — غضب الثعبان الأكبر", moves = 30, snakeEvery = 2, fruitKinds = 7, fruitTop = listOf(11, 10, 10, 10, 10), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4, 8 to 5, 7 to 5, 9 to 5, 10 to 3, 10 to 4, 6 to 4)),
+            RescueLevel(18, "إنقاذ ١٨ — المعركة الأخيرة", moves = 30, snakeEvery = 2, fruitKinds = 7, fruitTop = listOf(11, 10, 10, 10, 10), heavy = listOf(9 to 3, 8 to 3, 7 to 3, 7 to 4, 8 to 4, 9 to 4, 8 to 5, 7 to 5, 9 to 5, 10 to 3, 10 to 4, 6 to 4, 6 to 5, 10 to 5))
         )
 
         fun get(id: Int): RescueLevel = ALL.first { it.id == id }

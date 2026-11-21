@@ -80,17 +80,33 @@ fun MainMenuScreen(
     onPlayClick: () -> Unit,
     onMapClick: () -> Unit,
     onIslandClick: () -> Unit = {},
+    dailyVersion: Int = 0,
+    dailyPending: () -> Int = { 0 },
+    dailyViews: () -> List<com.example.daily.MissionView> = { emptyList() },
+    dailyStreak: () -> Int = { 0 },
+    chestReady: () -> Boolean = { false },
+    chestClaimed: () -> Boolean = { false },
+    chestReward: () -> Int = { 50 },
+    onClaimDaily: (Int) -> Unit = {},
+    onClaimChest: () -> Unit = {},
     onSoundToggle: (Boolean) -> Unit,
     onHapticsToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showSettings by remember { mutableStateOf(false) }
     var showWheel by remember { mutableStateOf(false) }
+    var showDaily by remember { mutableStateOf(false) }
     var nowMs by remember { mutableStateOf(System.currentTimeMillis()) }
     androidx.compose.runtime.LaunchedEffect(Unit) {
         while (true) { kotlinx.coroutines.delay(1000); nowMs = System.currentTimeMillis() }
     }
     val wheelLeft = wheelReadyAt - nowMs
+    if (showDaily) {
+        com.example.ui.components.DailyMissionsDialog(
+            views = dailyViews, streak = dailyStreak, chestReady = chestReady, chestClaimed = chestClaimed,
+            chestReward = chestReward, onClaim = onClaimDaily, onClaimChest = onClaimChest, onClose = { showDaily = false }
+        )
+    }
     if (showWheel) {
         com.example.ui.components.LuckyWheelDialog(
             onSpin = onWheelSpin, onDouble = onWheelDouble, onClose = { showWheel = false }
@@ -207,6 +223,19 @@ fun MainMenuScreen(
                             }
                             Text(text = t, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
                         }
+                    }
+                    val pend = remember(dailyVersion, nowMs / 60000) { dailyPending() }
+                    Surface(
+                        modifier = Modifier.clickable { showDaily = true },
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (pend > 0) Color(0xFFE76F51) else Color(0xCC0E382A),
+                        border = androidx.compose.foundation.BorderStroke(2.dp, if (pend > 0) Color(0xFFFFD166) else Color(0x6602C39A))
+                    ) {
+                        Text(
+                            text = if (pend > 0) "📋 المهام اليومية ($pend)" else "📋 المهام اليومية",
+                            fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                        )
                     }
                 }
 

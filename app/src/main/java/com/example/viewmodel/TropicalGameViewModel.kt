@@ -44,6 +44,15 @@ enum class ScreenState {
 class TropicalGameViewModel(application: Application) : AndroidViewModel(application) {
     private val prefs = application.getSharedPreferences("tropical_crush_prefs", Context.MODE_PRIVATE)
     private val soundHelper = SoundHelper(application)
+    val daily = com.example.daily.DailyMissions(prefs)
+    private val _dailyVer = MutableStateFlow(0)
+    val dailyVersion: StateFlow<Int> = _dailyVer.asStateFlow()
+    private fun rescueUnlocked() = prefs.getInt("stars_level_5", 0) > 0
+    private fun rec(t: com.example.daily.MType, n: Int = 1, p: Int = -1) { daily.ensureToday(rescueUnlocked()); daily.record(t, n, p); _dailyVer.value++ }
+    fun dailyViews() = daily.views(rescueUnlocked())
+    fun dailyPending() = daily.pending(rescueUnlocked())
+    fun claimDaily(i: Int) { val g = daily.claim(i); if (g > 0) { island.s.gems += g; islandChanged() }; _dailyVer.value++ }
+    fun claimDailyChest() { val g = daily.claimChest(); if (g > 0) { island.s.gems += g; grantBooster(BoosterType.HAMMER, 1); islandChanged() }; _dailyVer.value++ }
 
     private val _screen = MutableStateFlow(ScreenState.SPLASH)
     val screen: StateFlow<ScreenState> = _screen.asStateFlow()
@@ -125,6 +134,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         val idx = LuckyWheel.pickIndex(Random)
         val prize = LuckyWheel.PRIZES[idx]
         prefs.edit().putLong("wheel_last", now).apply()
+        rec(com.example.daily.MType.SPIN_WHEEL)
         applyPrize(prize)
         ReadyNotifier.schedule(getApplication<Application>(), ReadyNotifier.ID_WHEEL, now + LuckyWheel.COOLDOWN_MS, "🎡 عجلة الحظ جاهزة للدوران!")
         return idx to prize
@@ -138,7 +148,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         p.booster?.let { grantBooster(it, p.amount) }
     }
     /** جواهر قاعة الاحتفالات عند إنقاذ الملكة. */
-    fun onRescueWon() { val b = island.hallBonus(); if (b > 0) { island.s.gems += b; islandChanged() } }
+    fun onRescueWon() { rec(com.example.daily.MType.WIN_RESCUE); val b = island.hallBonus(); if (b > 0) { island.s.gems += b; islandChanged() } }
     fun dismissGate() { _gateMsg.value = null }
 
     init {
@@ -238,6 +248,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun startLevel(levelNum: Int) {
+        daily.ensureToday(rescueUnlocked())
         val completions = _gameState.value.levelCompletions[levelNum] ?: prefs.getInt("completions_level_$levelNum", 0)
         val config = LevelConfig.getLevel(levelNum, completions)
         GameEngine.activeFruits = config.activeFruits
@@ -328,6 +339,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun useSpecial(r: Int, c: Int) {
+        rec(com.example.daily.MType.USE_SPECIAL)
         viewModelScope.launch {
             _gameState.update { it.copy(isBusyAnimating = true, selectedTile = null) }
             resolveMatchesCascade(forced = setOf(r to c), consumeMove = true)
@@ -451,7 +463,9 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
             val updatedCollected = state.collectedFruits.toMutableMap()
             matchResult.collectedByType.forEach { (fruit, count) ->
                 updatedCollected[fruit] = (updatedCollected[fruit] ?: 0) + count
+                daily.record(com.example.daily.MType.COLLECT_FRUIT, count, fruit.ordinal)
             }
+            daily.record(com.example.daily.MType.SCORE, earnedScore)
 
             // Mark matched tiles for shrink animation
             val shrinkingBoard = state.board.map { row ->
@@ -529,6 +543,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
     private fun declareVictory() {
         val state = _gameState.value
         val earnedStars = state.currentStars.coerceAtLeast(1)
+        rec(com.example.daily.MType.WIN_LEVELS); rec(com.example.daily.MType.EARN_STARS, earnedStars)
         val oldStars = prefs.getInt("stars_level_${state.levelConfig.levelNumber}", 0)
         val lvl = state.levelConfig.levelNumber
         val gift = if (lvl % 5 == 0 && oldStars == 0) island.bossGift(lvl) else 0
@@ -625,6 +640,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         val currentCount = state.boosterInventory[BoosterType.SHUFFLE] ?: 0
         if (currentCount <= 0) return
 
+        rec(com.example.daily.MType.USE_BOOSTER)
         val shuffled = GameEngine.shuffleBoard(state.board)
         val updatedInv = state.boosterInventory.toMutableMap()
         updatedInv[BoosterType.SHUFFLE] = currentCount - 1
@@ -651,6 +667,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         val count = state.boosterInventory[booster] ?: 0
         if (count <= 0) return
 
+        rec(com.example.daily.MType.USE_BOOSTER)
         val updatedInv = state.boosterInventory.toMutableMap()
         updatedInv[booster] = count - 1
 
