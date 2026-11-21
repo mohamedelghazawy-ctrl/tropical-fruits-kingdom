@@ -38,3 +38,15 @@
 
 # تقليل مخاطر التحسين العدواني (نبقي التمويه والضغط)
 -dontoptimize
+
+# ===== WorkManager / Room / Startup (تأتي مع AdMob؛ تستخدم reflection) =====
+-keep class androidx.work.** { *; }
+-keep class androidx.work.impl.** { *; }
+-keep class * extends androidx.work.ListenableWorker { *; }
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep class androidx.room.** { *; }
+-keep class androidx.startup.** { *; }
+-keep class * extends androidx.startup.Initializer { *; }
+-keep class **_Impl { *; }
+-dontwarn androidx.work.**
+-dontwarn androidx.room.**
