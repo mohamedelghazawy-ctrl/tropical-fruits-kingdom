@@ -11,8 +11,8 @@ android {
     applicationId = "com.tropicalfruitskingdom"
     minSdk = 24
     targetSdk = 36
-    versionCode = 2
-    versionName = "1.0.1"
+    versionCode = 3
+    versionName = "1.0.2"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -38,12 +38,12 @@ android {
   buildTypes {
     release {
       isCrunchPngs = false
-      // R8 معطّل مؤقتًا: نسخة release كانت تنهار بعد إضافة AdMob
-      isMinifyEnabled = false
+      // R8: تمويه الأسماء وضغط الكود (مطلوب من Google Play). تقليص الموارد معطّل لأن الصور تُحمَّل بالاسم (getIdentifier).
+      isMinifyEnabled = true
       isShrinkResources = false
       // رموز native لتقارير الأعطال في Play Console
       ndk { debugSymbolLevel = "SYMBOL_TABLE" }
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
       // Do not remove or modify this signingConfig assignment. It is necessary for Android apps in
       // AI Studio.
       signingConfig = signingConfigs.getByName("release")

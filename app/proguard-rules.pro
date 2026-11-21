@@ -24,3 +24,14 @@
 -keep class com.google.android.gms.ads.** { *; }
 -keep class com.google.android.gms.internal.ads.** { *; }
 -dontwarn com.google.android.gms.**
+
+# ===== قواعد الحماية لنسخة release (R8 مفعّل) =====
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+-keep class com.example.TropicalApp { *; }
+-keep class com.example.notify.** { *; }
+-keep class * extends android.content.BroadcastReceiver { *; }
+-keep class * extends android.app.Application { *; }
+-keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); }
+-keep class com.example.ads.** { *; }
+-keep class kotlin.Metadata { *; }
+-dontwarn kotlinx.coroutines.**
