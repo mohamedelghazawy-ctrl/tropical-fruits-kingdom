@@ -35,3 +35,6 @@
 -keep class com.example.ads.** { *; }
 -keep class kotlin.Metadata { *; }
 -dontwarn kotlinx.coroutines.**
+
+# تقليل مخاطر التحسين العدواني (نبقي التمويه والضغط)
+-dontoptimize

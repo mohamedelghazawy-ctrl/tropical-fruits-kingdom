@@ -43,7 +43,7 @@ android {
       isShrinkResources = false
       // رموز native لتقارير الأعطال في Play Console
       ndk { debugSymbolLevel = "SYMBOL_TABLE" }
-      proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       // Do not remove or modify this signingConfig assignment. It is necessary for Android apps in
       // AI Studio.
       signingConfig = signingConfigs.getByName("release")
