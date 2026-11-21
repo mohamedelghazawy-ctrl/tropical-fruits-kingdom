@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "87851334641",
+    "project_id": "gamexbreak-d2872",
+    "storage_bucket": "gamexbreak-d2872.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:87851334641:android:7ceb705726f38ac6fc2250",
+        "android_client_info": {
+          "package_name": "com.tropicalfruitskingdom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIK2rCzI5nwPHjS6Jdm_wVz5s63_ppPn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

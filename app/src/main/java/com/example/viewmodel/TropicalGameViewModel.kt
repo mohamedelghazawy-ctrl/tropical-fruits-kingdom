@@ -244,6 +244,10 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         RescueLevel.ALL.associate { it.id to prefs.getInt("rescue_stars_${it.id}", 0) }.filterValues { it > 0 }
 
     fun navigateTo(newScreen: ScreenState) {
+        if (_screen.value == ScreenState.GAMEPLAY && newScreen != ScreenState.GAMEPLAY) {
+            val st = _gameState.value
+            if (st.status == GameStatus.PLAYING) com.example.analytics.Track.levelQuit(st.levelConfig.levelNumber, st.movesRemaining, st.score, st.levelConfig.targetScore)
+        }
         _screen.value = newScreen
     }
 
@@ -276,10 +280,13 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         }
         registerUserInteraction()
         _screen.value = ScreenState.GAMEPLAY
+        com.example.analytics.Track.levelStart(levelNum)
     }
 
     fun restartCurrentLevel() {
-        startLevel(_gameState.value.levelConfig.levelNumber)
+        val cur = _gameState.value
+        if (cur.status == GameStatus.PLAYING) com.example.analytics.Track.levelRestart(cur.levelConfig.levelNumber)
+        startLevel(cur.levelConfig.levelNumber)
     }
 
     fun nextLevel() {
@@ -533,6 +540,8 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
             declareVictory()
         } else if (state.movesRemaining <= 0) {
             _gameState.update { it.copy(status = GameStatus.LOST) }
+            com.example.analytics.Track.levelLose(state.levelConfig.levelNumber, state.score, state.levelConfig.targetScore,
+                state.levelConfig.targetFruits.entries.sumOf { (f, n) -> (n - (state.collectedFruits[f] ?: 0)).coerceAtLeast(0) })
             if (state.soundEnabled) soundHelper.playDefeat()
         } else if (!GameEngine.hasPossibleMoves(state.board)) {
             // Auto-shuffle with animation and player feedback
@@ -552,6 +561,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         if (gain > 0 || gift > 0) islandChanged()
         saveScoreAndStars(state.levelConfig.levelNumber, state.score, earnedStars)
         _gameState.update { it.copy(status = GameStatus.WON, isBusyAnimating = false) }
+        com.example.analytics.Track.levelWin(lvl, earnedStars, state.score, state.movesRemaining)
         if (state.soundEnabled) soundHelper.playVictory()
     }
 
@@ -794,6 +804,7 @@ class TropicalGameViewModel(application: Application) : AndroidViewModel(applica
         val st = _gameState.value
         if (st.status != GameStatus.LOST || st.revived) return
         _gameState.update { it.copy(status = GameStatus.PLAYING, movesRemaining = it.movesRemaining + 5, revived = true, isBusyAnimating = false) }
+        com.example.analytics.Track.levelRevive(st.levelConfig.levelNumber)
         registerUserInteraction()
         viewModelScope.launch { if (!GameEngine.hasPossibleMoves(_gameState.value.board)) triggerNoMovesReshuffle() }
     }

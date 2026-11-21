@@ -5,6 +5,11 @@ import android.content.Context
 
 /** يلتقط الانهيارات المبكرة (قبل MainActivity، مثل تهيئة مكتبة الإعلانات) ويحفظها لعرضها عند التشغيل التالي. */
 class TropicalApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        com.example.analytics.Track.init(this)
+    }
+
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         try {

@@ -1,0 +1,15 @@
+أضف هذه الفقرة لصفحة الخصوصية (عربي):
+
+جمع بيانات الاستخدام والأعطال:
+تستخدم اللعبة خدمات Google Firebase (Analytics وCrashlytics) لتحسين اللعبة. تُجمع بيانات مجهولة المصدر مثل: المستويات التي يلعبها اللاعب ونتائجها، تقارير أعطال التطبيق (نوع الجهاز وإصدار أندرويد وسبب العطل)، ومعرّف تثبيت التطبيق. لا نجمع اسمك أو بريدك أو موقعك. تُعالَج هذه البيانات بواسطة Google وفق سياسة خصوصيتها: https://policies.google.com/privacy
+
+English:
+Usage and crash data: This game uses Google Firebase (Analytics and Crashlytics) to improve gameplay. We collect anonymous data such as levels played and outcomes, crash reports (device model, Android version, crash cause) and an app-installation identifier. We do not collect your name, email or location. Data is processed by Google under its Privacy Policy: https://policies.google.com/privacy
+
+---
+Play Console > App content > Data safety (حدّث الإجابات):
+- Collects data: Yes. Shared: Yes (مع Google كمعالج خدمة، يُعتبر "Service provider" وليس مشاركة بالمعنى الإعلاني — اختر حسب إرشاد النموذج).
+- App activity > App interactions: Collected, Analytics.
+- App info and performance > Crash logs + Diagnostics: Collected, Analytics / App functionality.
+- Device or other IDs: Collected (Firebase installation ID / Advertising ID من AdMob أصلًا)، Analytics.
+- Data is encrypted in transit: Yes. Users can request deletion: حسب ما تختاره.

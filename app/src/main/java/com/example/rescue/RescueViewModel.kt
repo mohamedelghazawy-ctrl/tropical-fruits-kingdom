@@ -74,7 +74,8 @@ class RescueViewModel(application: Application) : AndroidViewModel(application) 
 
     var soundEnabled = prefs.getBoolean("sound_enabled", true)
 
-    init { startLevel(1) }
+    private var tracking = false
+    init { startLevel(1); tracking = true }
 
     fun startLevel(id: Int) {
         poseJob?.cancel(); idleJob?.cancel()
@@ -85,6 +86,7 @@ class RescueViewModel(application: Application) : AndroidViewModel(application) 
         reward = null; rewardDoubled = false; revived = false
         pose = QueenPose.IDLE; animT = 1f; version++
         startIdle()
+        if (tracking) com.example.analytics.Track.rescueStart(id)
     }
 
     fun restart() = startLevel(state.level.id)
@@ -176,8 +178,8 @@ class RescueViewModel(application: Application) : AndroidViewModel(application) 
             Step.Reshuffled -> { version++; delay(200) }
             is Step.Ended -> {
                 stars = step.stars
-                if (step.outcome == Outcome.WON) { sfx { sound.playVictory() }; delay(900); status = RescueStatus.WON; saveStars(step.stars); rollReward() }
-                else { setPose(QueenPose.SCARED, 60_000); sfx { sound.playDefeat() }; status = RescueStatus.LOST }
+                if (step.outcome == Outcome.WON) { sfx { sound.playVictory() }; delay(900); status = RescueStatus.WON; saveStars(step.stars); rollReward(); com.example.analytics.Track.rescueWin(state.level.id, step.stars, state.movesLeft) }
+                else { setPose(QueenPose.SCARED, 60_000); sfx { sound.playDefeat() }; status = RescueStatus.LOST; com.example.analytics.Track.rescueLose(state.level.id, state.movesLeft) }
                 idleJob?.cancel()
             }
         }
@@ -251,6 +253,7 @@ class RescueViewModel(application: Application) : AndroidViewModel(application) 
     fun reviveAfterAd() {
         if (status != RescueStatus.LOST || revived) return
         revived = true
+        com.example.analytics.Track.rescueRevive(state.level.id)
         RescueEngine.revive(state)
         snakeVis = state.snake.toFloat()
         status = RescueStatus.PLAYING
