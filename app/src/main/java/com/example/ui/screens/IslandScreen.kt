@@ -190,9 +190,9 @@ private fun SiteView(engine: IslandEngine, id: Int, selected: Boolean, now: Long
         // منطقة اللمس تغطي القصر كله (البرجين والقبة والواجهة) دون الخروج عن شكله — بإحداثيات صورة الجزيرة
         val ms = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
         for ((hx, hy, hw, hh) in listOf(
-            listOf(399, 55, 140, 515),   // البرج الأيسر
-            listOf(815, 55, 140, 515),   // البرج الأيمن
-            listOf(539, 85, 276, 485)    // القبة والواجهة والباب
+            listOf(432, 75, 114, 490),   // البرج الأيسر
+            listOf(812, 75, 118, 490),   // البرج الأيمن
+            listOf(546, 130, 268, 430)    // القبة والواجهة والباب
         )) {
             Box(Modifier.offset(x = hx.dp, y = hy.dp).size(hw.dp, hh.dp).clickable(indication = null, interactionSource = ms) { onTap() })
         }
