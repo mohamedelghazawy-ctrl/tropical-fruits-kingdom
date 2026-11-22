@@ -1,0 +1,12 @@
+أضف هذه الفقرة لصفحة الخصوصية (مع فقرة Firebase السابقة):
+
+الحفظ السحابي:
+عند تسجيل الدخول بحساب ألعاب Google Play، تُحفظ نسخة من تقدّمك في اللعبة (المستويات والنجوم والجواهر وحالة الجزيرة) على خوادم Google لاسترجاعه على جهاز آخر. لا نصل إلى بريدك ولا إلى بيانات حسابك الشخصية، والتسجيل اختياري.
+
+English:
+Cloud save: If you sign in with Google Play Games, a copy of your game progress (levels, stars, gems and island state) is stored on Google's servers so you can restore it on another device. Sign-in is optional. We do not access your email or other personal account data.
+
+---
+Data safety (Play Console): أضف/عدّل:
+- App activity > "Other user-generated content / App interactions" → Collected: Yes, purpose: App functionality (Saved game data). Optional: Yes (user can choose to sign in).
+- Personal info > User IDs (Play Games player ID) → Collected, purpose: App functionality.

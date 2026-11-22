@@ -8,6 +8,7 @@ class TropicalApp : Application() {
     override fun onCreate() {
         super.onCreate()
         com.example.analytics.Track.init(this)
+        try { com.google.android.gms.games.PlayGamesSdk.initialize(this) } catch (e: Throwable) { }
     }
 
     override fun attachBaseContext(base: Context) {

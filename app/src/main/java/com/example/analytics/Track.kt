@@ -36,7 +36,7 @@ object Track {
     // ───────── المستويات العادية ─────────
     private val tries = HashMap<Int, Int>(); private val rtries = HashMap<Int, Int>()
     fun levelStart(level: Int) { val n = (tries[level] ?: 0) + 1; tries[level] = n; key("level", level); log("lvl_start", "level" to level, "attempt" to n) }
-    fun levelWin(level: Int, stars: Int, score: Int, movesLeft: Int) = log("lvl_win", "level" to level, "stars" to stars, "score" to score, "moves_left" to movesLeft)
+    fun levelWin(level: Int, stars: Int, score: Int, movesLeft: Int) { log("lvl_win", "level" to level, "stars" to stars, "score" to score, "moves_left" to movesLeft); com.example.cloud.CloudSave.requestPush() }
     fun levelLose(level: Int, score: Int, target: Int, fruitsLeft: Int) =
         log("lvl_lose", "level" to level, "score_pct" to (if (target > 0) (score * 100 / target).coerceAtMost(100) else 0), "fruits_left" to fruitsLeft)
     /** خرج اللاعب من المستوى أثناء اللعب (رجوع للخريطة/القائمة) */
@@ -47,7 +47,7 @@ object Track {
 
     // ───────── إنقاذ الملكة ─────────
     fun rescueStart(id: Int) { val n = (rtries[id] ?: 0) + 1; rtries[id] = n; key("rescue", id); log("rescue_start", "level" to id, "attempt" to n) }
-    fun rescueWin(id: Int, stars: Int, movesLeft: Int) = log("rescue_win", "level" to id, "stars" to stars, "moves_left" to movesLeft)
+    fun rescueWin(id: Int, stars: Int, movesLeft: Int) { log("rescue_win", "level" to id, "stars" to stars, "moves_left" to movesLeft); com.example.cloud.CloudSave.requestPush() }
     fun rescueLose(id: Int, movesLeft: Int) = log("rescue_lose", "level" to id, "moves_left" to movesLeft)
     fun rescueRevive(id: Int) = log("rescue_revive_ad", "level" to id)
 }

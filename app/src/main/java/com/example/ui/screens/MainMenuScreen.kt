@@ -237,6 +237,25 @@ fun MainMenuScreen(
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                         )
                     }
+                    when (com.example.cloud.CloudSave.state) {
+                        1 -> Surface(
+                            modifier = Modifier.clickable { com.example.cloud.CloudSave.signIn() },
+                            shape = RoundedCornerShape(20.dp),
+                            color = Color(0xCC0E382A),
+                            border = androidx.compose.foundation.BorderStroke(2.dp, Color(0x6602C39A))
+                        ) {
+                            Text(
+                                text = "☁️ احفظ تقدمك بحساب ألعاب Google",
+                                fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White,
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                            )
+                        }
+                        2 -> Text(
+                            text = "☁️ تقدّمك محفوظ على حسابك",
+                            fontSize = 12.sp, color = Color(0xFFB8F2E0),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
                 }
 
                 // Settings icon button

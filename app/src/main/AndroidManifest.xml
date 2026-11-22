@@ -29,6 +29,17 @@
         </activity>
 
         <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/game_services_project_id" />
+
+        <activity
+            android:name=".PhoenixActivity"
+            android:exported="false"
+            android:process=":phoenix"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6221523107197866~5331752021" />
 

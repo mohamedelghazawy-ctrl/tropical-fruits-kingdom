@@ -52,6 +52,16 @@ class MainActivity : ComponentActivity() {
         if (hasFocus) hideSystemBars()
     }
 
+    override fun onStart() {
+        super.onStart()
+        com.example.cloud.CloudSave.attach(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        com.example.cloud.CloudSave.push(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
