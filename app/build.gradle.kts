@@ -5,6 +5,13 @@ plugins {
   alias(libs.plugins.firebase.crashlytics)
 }
 
+// مكتبات Firebase قد تكون مبنية بإصدار Kotlin أحدث؛ نتجاوز فحص نسخة الـ metadata فقط
+kotlin {
+  compilerOptions {
+    freeCompilerArgs.add("-Xskip-metadata-version-check")
+  }
+}
+
 android {
   namespace = "com.example"
   compileSdk = 37
