@@ -51,6 +51,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
@@ -143,6 +149,7 @@ fun LevelMapScreen(
         label = "phase"
     )
 
+    val sea = ImageBitmap.imageResource(R.drawable.sea_strip)
     Box(modifier = modifier.fillMaxSize().background(Color(0xFF053247))) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val widthDp = maxWidth
@@ -165,19 +172,12 @@ fun LevelMapScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(totalH)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color(0xFF8FE0E3), Color(0xFF34B6C2), Color(0xFF1590A8),
-                                    Color(0xFF0C6486), Color(0xFF053247)
-                                )
-                            )
-                        )
+                        .background(Color(0xFF1590A8))
                         .drawBehind {
                             // نرسم المقطع الظاهر فقط لتوفير الأداء
                             val from = scroll.value - 120.dp.toPx()
                             val to = scroll.value + viewportPx + 120.dp.toPx()
-                            drawSeaWaves(from, to, phase)
+                            drawSeaTiles(sea, from, to)
                             drawRoute(doneFlags, from, to, GAP.toPx(), BOTTOM_PAD.toPx())
                         }
                 ) {
@@ -291,7 +291,7 @@ fun LevelMapScreen(
     }
 }
 
-private val ISLAND_COLUMN_WIDTH = 150.dp
+private val ISLAND_COLUMN_WIDTH = 180.dp
 
 /** عقدة إنقاذ ملكة الفواكه بين الجزر. */
 @Composable
@@ -359,13 +359,23 @@ private fun IslandNode(
     modifier: Modifier = Modifier
 ) {
     val boss = level.levelNumber % 5 == 0
-    val s = if (boss) 118.dp else 100.dp
+    val w = if (boss) 176.dp else 146.dp
+    val h = if (boss) w * 0.96f else w * 0.70f
     val fruit = level.islandFruit
+    val art = if (boss) R.drawable.map_isle_boss else when (fruit) {
+        FruitType.STRAWBERRY -> R.drawable.map_isle_straw
+        FruitType.PINEAPPLE -> R.drawable.map_isle_pine
+        FruitType.COCONUT -> R.drawable.map_isle_coco
+        FruitType.WATERMELON -> R.drawable.map_isle_melon
+        FruitType.DRAGONFRUIT -> R.drawable.map_isle_dragon
+        else -> R.drawable.map_isle_blue
+    }
+    val dim = remember { ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.2f) }) }
 
     Column(
         modifier = modifier
+            .offset(y = if (boss) -(h - 102.dp) else 0.dp)
             .width(ISLAND_COLUMN_WIDTH)
-            .alpha(if (unlocked) 1f else 0.6f)
             .clickable(
                 enabled = unlocked,
                 interactionSource = remember { MutableInteractionSource() },
@@ -375,16 +385,23 @@ private fun IslandNode(
             .testTag("level_item_${level.levelNumber}"),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(modifier = Modifier.size(s), contentAlignment = Alignment.TopCenter) {
+        Box(modifier = Modifier.size(width = w, height = h), contentAlignment = Alignment.TopCenter) {
             if (isCurrent) CurrentRing()
-            Canvas(modifier = Modifier.fillMaxSize()) { drawIsland(boss) }
-
-            // فاكهة اسم الجزيرة (أو نجمة قوس قزح للجزيرة الأسطورية)
-            FruitComposable(
-                fruitType = fruit ?: FruitType.PINEAPPLE,
-                specialType = if (fruit == null) SpecialType.STARFRUIT_RAINBOW else SpecialType.NONE,
-                modifier = Modifier.size(s * 0.66f).offset(y = s * 0.04f)
+            Image(
+                painter = painterResource(art),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                colorFilter = if (unlocked) null else dim,
+                alpha = if (unlocked) 1f else 0.7f,
+                modifier = Modifier.fillMaxSize()
             )
+            if (fruit == null && !boss) {
+                FruitComposable(
+                    fruitType = FruitType.PINEAPPLE,
+                    specialType = SpecialType.STARFRUIT_RAINBOW,
+                    modifier = Modifier.size(h * 0.45f).align(Alignment.TopCenter)
+                )
+            }
 
             // رقم المرحلة
             Box(
@@ -405,23 +422,32 @@ private fun IslandNode(
                     color = Color(0xFF3A2400)
                 )
             }
-            if (boss) Text(text = "👑", fontSize = 18.sp, modifier = Modifier.align(Alignment.TopEnd))
+            if (boss) Text(text = "👑", fontSize = 20.sp, modifier = Modifier.align(Alignment.TopEnd))
             if (!unlocked) {
                 Icon(
                     imageVector = Icons.Default.Lock,
                     contentDescription = "مقفلة",
                     tint = Color.White,
-                    modifier = Modifier.align(Alignment.BottomCenter).size(22.dp)
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(34.dp)
+                        .background(Color(0x99053247), CircleShape)
+                        .padding(6.dp)
                 )
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier
+                .background(Color(0x99053247), RoundedCornerShape(50))
+                .padding(horizontal = 6.dp, vertical = 1.dp)
+        ) {
             repeat(3) { index ->
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = null,
-                    tint = if (index < stars) Color(0xFFFFD166) else Color.White.copy(alpha = 0.3f),
+                    tint = if (index < stars) Color(0xFFFFD166) else Color.White.copy(alpha = 0.35f),
                     modifier = Modifier.size(15.dp)
                 )
             }
@@ -509,30 +535,18 @@ private fun DrawScope.drawIsland(boss: Boolean) {
     }
 }
 
-/** أمواج هادئة متحركة، تُرسم للصفوف الظاهرة فقط. */
-private fun DrawScope.drawSeaWaves(from: Float, to: Float, phase: Float) {
-    val rowH = 48.dp.toPx()
-    val colW = 64.dp.toPx()
-    val firstRow = (from / rowH).toInt().coerceAtLeast(0)
-    val lastRow = (to / rowH).toInt()
-    val shift = phase * colW
-    val stroke = Stroke(width = 2.2.dp.toPx(), cap = StrokeCap.Round)
-    for (row in firstRow..lastRow) {
-        val y = row * rowH
-        val rowOffset = if (row % 2 == 0) 0f else colW / 2f
-        var x = -colW + ((rowOffset + shift) % colW)
-        while (x < size.width + colW) {
-            drawArc(
-                color = Color.White.copy(alpha = 0.16f),
-                startAngle = 200f,
-                sweepAngle = 140f,
-                useCenter = false,
-                topLeft = Offset(x, y),
-                size = Size(colW * 0.7f, 18.dp.toPx()),
-                style = stroke
-            )
-            x += colW
-        }
+/** بحر مرسوم: شريط صورة قابل للتكرار رأسياً يُمدّ على عرض الشاشة، ويُرسم المقطع الظاهر فقط. */
+private fun DrawScope.drawSeaTiles(sea: ImageBitmap, from: Float, to: Float) {
+    val w = size.width
+    val tileH = w * sea.height / sea.width
+    val first = (from / tileH).toInt().coerceAtLeast(0)
+    val last = (to / tileH).toInt()
+    for (k in first..last) {
+        drawImage(
+            image = sea,
+            dstOffset = IntOffset(0, (k * tileH).toInt()),
+            dstSize = IntSize(w.toInt(), tileH.toInt() + 1)
+        )
     }
 }
 
@@ -558,7 +572,12 @@ private fun DrawScope.drawRoute(
         val done = doneFlags[i]
         drawPath(
             path = path,
-            color = if (done) Color(0xFFFFD166) else Color.White.copy(alpha = 0.5f),
+            color = Color(0x66053247),
+            style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round, pathEffect = dots)
+        )
+        drawPath(
+            path = path,
+            color = if (done) Color(0xFFFFD166) else Color.White.copy(alpha = 0.9f),
             style = Stroke(width = 5.dp.toPx(), cap = StrokeCap.Round, pathEffect = dots)
         )
     }
