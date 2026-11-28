@@ -40,18 +40,18 @@ data class LevelConfig(
 
         // Pre-defined island names and lore
         private val ISLAND_NAMES = listOf(
-            "Palm Beach" to "شاطئ النخيل الذهبي",
+            "Pineapple Cabin" to "كوخ الأناناس الذهبي",
             "Mango Falls" to "شلال المانجو العذب",
-            "Dragonfruit Jungle" to "غابة الدراجون الساحرة",
-            "Strawberry Reef" to "بستان الفراولة المرجاني",
-            "Coconut Cove" to "كهف جوز الهند السري",
-            "Fruit Volcano" to "بركان الفواكه المتفجر",
+            "Dragonfruit Pagoda" to "معبد الدراجون الوردي",
+            "Strawberry Windmill" to "طاحونة الفراولة الحمراء",
+            "Coconut Lookout" to "برج جوز الهند الهادئ",
+            "Mango Orchard" to "بستان المانجو الذهبي",
             "Emerald Kiwi Valley" to "وادي الكيوي الزمردي",
             "Watermelon Oasis" to "واحة البطيخ المنعشة",
             "Royal Pineapple Peak" to "قمة الأناناس الملكية",
             "Legendary Paradise" to "جنة الفواكه الأسطورية",
-            "Sunset Coral Bay" to "خليج المرجان الوردي",
-            "Crystal Lagoon" to "بحيرة الكريستال الاستوائية"
+            "Pink Blossom Garden" to "حديقة الزهور الوردية",
+            "Coconut Lagoon" to "بحيرة جوز الهند الصافية"
         )
 
         /**
@@ -67,8 +67,18 @@ data class LevelConfig(
             val islandIndex = (levelNumber - 1) % ISLAND_NAMES.size
             val (baseEnName, baseArTitle) = ISLAND_NAMES[islandIndex]
             val tier = ((levelNumber - 1) / ISLAND_NAMES.size) + 1
-            val titleAr = if (tier > 1) "$baseArTitle - الجزء $tier" else baseArTitle
-            val islandName = if (tier > 1) "$baseEnName Pt.$tier" else baseEnName
+            val isBoss = levelNumber % 5 == 0
+            // جزيرة الزعيم لها شكل ثابت على الخريطة، فاسمها مستقل عن اسم دورة الجزر.
+            val titleAr = when {
+                isBoss -> "حصن الزعيم ${levelNumber / 5}"
+                tier > 1 -> "$baseArTitle - الجزء $tier"
+                else -> baseArTitle
+            }
+            val islandName = when {
+                isBoss -> "Boss Fort ${levelNumber / 5}"
+                tier > 1 -> "$baseEnName Pt.$tier"
+                else -> baseEnName
+            }
 
             // Progressive score formula
             // Move budget scales tightly as levels advance

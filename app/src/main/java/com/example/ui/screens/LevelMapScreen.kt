@@ -302,10 +302,14 @@ private fun RescueNode(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val rw = 180.dp
+    val rh = rw * 0.904f
+    val dim = remember { ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.2f) }) }
     Column(
         modifier = modifier
+            .offset(y = -(rh - 102.dp))
             .width(ISLAND_COLUMN_WIDTH)
-            .alpha(if (unlocked) 1f else 0.6f)
+            .alpha(if (unlocked) 1f else 0.7f)
             .clickable(
                 enabled = unlocked,
                 interactionSource = remember { MutableInteractionSource() },
@@ -315,17 +319,25 @@ private fun RescueNode(
             .testTag("rescue_node_$index"),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(modifier = Modifier.size(100.dp), contentAlignment = Alignment.TopCenter) {
-            Canvas(modifier = Modifier.fillMaxSize()) { drawIsland(false) }
+        Box(modifier = Modifier.size(width = rw, height = rh), contentAlignment = Alignment.TopCenter) {
+            Image(
+                painter = painterResource(R.drawable.map_isle_queen),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                colorFilter = if (unlocked) null else dim,
+                modifier = Modifier.fillMaxSize()
+            )
+            // صورة الملكة فوق المنصة الذهبية في قمة الجزيرة
             Image(
                 painter = painterResource(R.drawable.queen_scared),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.TopCenter,
                 modifier = Modifier
-                    .size(66.dp)
+                    .absoluteOffset(x = rw * 0.507f - 25.dp, y = rh * 0.21f - 25.dp)
+                    .size(50.dp)
                     .clip(CircleShape)
-                    .border(3.dp, Color(0xFFFFD166), CircleShape)
+                    .border(2.5.dp, Color(0xFFFFD166), CircleShape)
                     .background(Color(0xFF1E3A36))
             )
             Box(
@@ -337,15 +349,21 @@ private fun RescueNode(
                 contentAlignment = Alignment.Center
             ) { Text("👑", fontSize = 14.sp) }
             if (!unlocked) {
-                Icon(Icons.Default.Lock, contentDescription = "مقفلة", tint = Color.White, modifier = Modifier.align(Alignment.BottomCenter).size(22.dp))
+                Icon(Icons.Default.Lock, contentDescription = "مقفلة", tint = Color.White, modifier = Modifier.align(Alignment.Center).size(34.dp).background(Color(0x99053247), CircleShape).padding(6.dp))
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.background(Color(0x99053247), RoundedCornerShape(50)).padding(horizontal = 6.dp, vertical = 1.dp)
+        ) {
             repeat(3) { i ->
-                Icon(Icons.Default.Star, contentDescription = null, tint = if (i < stars) Color(0xFFFFD166) else Color.White.copy(alpha = 0.3f), modifier = Modifier.size(15.dp))
+                Icon(Icons.Default.Star, contentDescription = null, tint = if (i < stars) Color(0xFFFFD166) else Color.White.copy(alpha = 0.35f), modifier = Modifier.size(15.dp))
             }
         }
-        Text("إنقاذ ملكة الفواكه", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEAFFF7), maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+        Text(
+            "إنقاذ ملكة الفواكه", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEAFFF7), maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 2.dp).background(Color(0xA0053247), RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 2.dp)
+        )
     }
 }
 
@@ -368,7 +386,10 @@ private fun IslandNode(
         FruitType.COCONUT -> R.drawable.map_isle_coco
         FruitType.WATERMELON -> R.drawable.map_isle_melon
         FruitType.DRAGONFRUIT -> R.drawable.map_isle_dragon
-        else -> R.drawable.map_isle_blue
+        FruitType.MANGO -> R.drawable.map_isle_mango
+        FruitType.KIWI -> R.drawable.map_isle_kiwi
+        null -> R.drawable.map_isle_legend
+        else -> R.drawable.map_isle_pine
     }
     val dim = remember { ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.2f) }) }
 
@@ -395,14 +416,6 @@ private fun IslandNode(
                 alpha = if (unlocked) 1f else 0.7f,
                 modifier = Modifier.fillMaxSize()
             )
-            if (fruit == null && !boss) {
-                FruitComposable(
-                    fruitType = FruitType.PINEAPPLE,
-                    specialType = SpecialType.STARFRUIT_RAINBOW,
-                    modifier = Modifier.size(h * 0.45f).align(Alignment.TopCenter)
-                )
-            }
-
             // رقم المرحلة
             Box(
                 modifier = Modifier
