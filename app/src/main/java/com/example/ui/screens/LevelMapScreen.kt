@@ -33,6 +33,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -40,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
@@ -85,6 +88,7 @@ import com.example.ui.components.FruitComposable
 import kotlin.math.PI
 import kotlin.math.sin
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 private const val LEVEL_COUNT = 95
 private const val RESCUE_EVERY = 5
@@ -96,7 +100,7 @@ private fun buildSlots(rescueCount: Int): List<Int> = buildList {
         if (n % RESCUE_EVERY == 0 && n / RESCUE_EVERY <= rescueCount) add(-(n / RESCUE_EVERY))
     }
 }
-private val GAP = 175.dp          // المسافة الرأسية بين جزيرتين
+private val GAP = 240.dp          // المسافة الرأسية بين جزيرتين
 private val FOG_HEIGHT = 440.dp   // منطقة الضباب فوق آخر جزيرة
 private val BOTTOM_PAD = 190.dp   // هامش أسفل الجزيرة الأولى
 private const val ZIGZAG = 0.26f  // اتساع تعرّج المسار (نسبة من العرض)
@@ -142,6 +146,7 @@ fun LevelMapScreen(
     val doneFlags = remember(levelStars, rescueStars, slots) { slots.map { slotStars(it) > 0 } }
 
     val scroll = rememberScrollState()
+    val scope = rememberCoroutineScope()
     val phase by rememberInfiniteTransition(label = "sea").animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -249,6 +254,29 @@ fun LevelMapScreen(
                 }
             }
             }
+
+            // أزرار التنقل السريع: لآخر جزيرة، للجزيرة الحالية، وللجزيرة الأولى
+            fun jumpTo(index: Int) {
+                val target = with(density) { centerY(index).toPx() } - viewportPx / 2f
+                scope.launch { scroll.animateScrollTo(target.toInt().coerceIn(0, scroll.maxValue), tween(700)) }
+            }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 14.dp, bottom = 28.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                MapNavButton(modifier = Modifier.testTag("map_nav_top"), onClick = { jumpTo(slots.lastIndex) }) {
+                    Icon(Icons.Default.KeyboardArrowUp, contentDescription = "آخر جزيرة", tint = Color.White, modifier = Modifier.size(28.dp))
+                }
+                MapNavButton(modifier = Modifier.testTag("map_nav_current"), onClick = { jumpTo(currentIndex) }) {
+                    Text("📍", fontSize = 20.sp)
+                }
+                MapNavButton(modifier = Modifier.testTag("map_nav_bottom"), onClick = { jumpTo(0) }) {
+                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = "أول جزيرة", tint = Color.White, modifier = Modifier.size(28.dp))
+                }
+            }
         }
 
         // شريط علوي عائم فوق الخريطة
@@ -292,6 +320,20 @@ fun LevelMapScreen(
 }
 
 private val ISLAND_COLUMN_WIDTH = 180.dp
+
+/** زر دائري عائم للتنقل السريع على الخريطة. */
+@Composable
+private fun MapNavButton(modifier: Modifier = Modifier, onClick: () -> Unit, content: @Composable () -> Unit) {
+    Box(
+        modifier = modifier
+            .size(46.dp)
+            .background(Color(0xCC0E382A), CircleShape)
+            .border(1.5.dp, Color(0x6602C39A), CircleShape)
+            .clip(CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) { content() }
+}
 
 /** عقدة إنقاذ ملكة الفواكه بين الجزر. */
 @Composable
